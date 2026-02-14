@@ -8,6 +8,7 @@ import Home from './pages/Home';
 import Auth from './pages/Auth';
 import Onboarding from './pages/Onboarding';
 import Profile from './pages/Profile';
+import MenuScanner from './pages/MenuScanner';
 
 // Components
 import Navbar from './components/Navbar';
@@ -24,6 +25,7 @@ function App() {
           <Route path="/onboarding" component={Onboarding} />
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/profile" component={Profile} />
+          <Route path="/menu-scanner" component={MenuScanner} />
           
           {/* Fallback 404 */}
           <Route>

@@ -69,6 +69,19 @@ const Auth = () => {
                                 value={name} 
                                 onChange={onChange}
                                 required 
+                                style={{
+                                    width: '100%',
+                                    padding: '1rem',
+                                    borderRadius: '1rem',
+                                    background: 'rgba(255,255,255,0.05)',
+                                    border: '1px solid rgba(255,255,255,0.1)',
+                                    color: '#fff',
+                                    fontSize: '1rem',
+                                    outline: 'none',
+                                    transition: 'all 0.3s'
+                                }}
+                                onFocus={(e) => e.target.style.borderColor = 'var(--primary)'}
+                                onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
                             />
                         </div>
                     )}
@@ -81,6 +94,19 @@ const Auth = () => {
                             value={email} 
                             onChange={onChange} 
                             required
+                            style={{
+                                width: '100%',
+                                padding: '1rem',
+                                borderRadius: '1rem',
+                                background: 'rgba(255,255,255,0.05)',
+                                border: '1px solid rgba(255,255,255,0.1)',
+                                color: '#fff',
+                                fontSize: '1rem',
+                                outline: 'none',
+                                transition: 'all 0.3s'
+                            }}
+                            onFocus={(e) => e.target.style.borderColor = 'var(--primary)'}
+                            onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
                         />
                     </div>
                     
@@ -92,6 +118,19 @@ const Auth = () => {
                             value={password} 
                             onChange={onChange} 
                             required
+                            style={{
+                                width: '100%',
+                                padding: '1rem',
+                                borderRadius: '1rem',
+                                background: 'rgba(255,255,255,0.05)',
+                                border: '1px solid rgba(255,255,255,0.1)',
+                                color: '#fff',
+                                fontSize: '1rem',
+                                outline: 'none',
+                                transition: 'all 0.3s'
+                            }}
+                            onFocus={(e) => e.target.style.borderColor = 'var(--primary)'}
+                            onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
                         />
                     </div>
                     

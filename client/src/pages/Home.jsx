@@ -3,90 +3,65 @@ import { Link } from 'wouter';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 
 // --- Global Background Manager ---
-// Seamlessly transitions backgrounds behind ALL content based on global scroll
 const GlobalBackground = () => {
     const { scrollYProgress } = useScroll(); // Global 0-1
     const smoothProgress = useSpring(scrollYProgress, { stiffness: 50, damping: 20 });
 
-    const op1 = useTransform(smoothProgress, [0, 0.25, 0.35], [1, 1, 0]); // Dark Table
-    const op2 = useTransform(smoothProgress, [0.25, 0.35, 0.55, 0.65], [0, 1, 1, 0]); // Green Salad
-    const op3 = useTransform(smoothProgress, [0.55, 0.65, 0.85, 0.95], [0, 1, 1, 0]); // Spices
-    const op4 = useTransform(smoothProgress, [0.85, 0.95], [0, 1]); // Final CTA
-
-    const scale = useTransform(smoothProgress, [0, 1], [1.1, 1]); // Gentle global zoom
+    const op1 = useTransform(smoothProgress, [0, 0.2], [1, 0]); // Deep Slate
+    const op2 = useTransform(smoothProgress, [0.1, 0.4, 0.6], [0, 1, 0]); // Amber Glow
+    const op3 = useTransform(smoothProgress, [0.5, 0.8, 1], [0, 1, 0]); // Emerald 
+    const op4 = useTransform(smoothProgress, [0.9, 1], [0, 1]); // Final 
 
     return (
-        <div style={{ position: 'fixed', inset: 0, zIndex: -1, overflow: 'hidden', background: '#0f172a' }}>
-            <motion.div style={{ position: 'absolute', inset: 0, opacity: op1, scale, backgroundImage: `url('https://images.unsplash.com/photo-1495195134817-aeb325a55b65?q=80&w=1920&auto=format&fit=crop')`, backgroundSize: 'cover', backgroundPosition: 'center', filter: 'brightness(0.4)' }} />
-            <motion.div style={{ position: 'absolute', inset: 0, opacity: op2, scale, backgroundImage: `url('https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=1920&auto=format&fit=crop')`, backgroundSize: 'cover', backgroundPosition: 'center', filter: 'brightness(0.4) sepia(0.2) hue-rotate(90deg)' }} />
-            <motion.div style={{ position: 'absolute', inset: 0, opacity: op3, scale, backgroundImage: `url('https://images.unsplash.com/photo-1596040033229-a9821ebd058d?q=80&w=1920&auto=format&fit=crop')`, backgroundSize: 'cover', backgroundPosition: 'center', filter: 'brightness(0.3) contrast(1.2)' }} />
-            <motion.div style={{ position: 'absolute', inset: 0, opacity: op4, background: 'radial-gradient(circle at 50% 100%, #1e293b 0%, #000 70%)' }} />
+        <div style={{ position: 'fixed', inset: 0, zIndex: -1, overflow: 'hidden', background: 'var(--bg-primary)' }}>
+             {/* Base Gradient */}
+            <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 0%, #1e293b 0%, #020617 100%)' }} />
+
+            {/* Dynamic Layers */}
+             <motion.div style={{ position: 'absolute', inset: 0, opacity: op2, background: 'radial-gradient(circle at 80% 30%, rgba(245, 158, 11, 0.15) 0%, transparent 60%)' }} />
+             <motion.div style={{ position: 'absolute', inset: 0, opacity: op3, background: 'radial-gradient(circle at 20% 70%, rgba(16, 185, 129, 0.15) 0%, transparent 60%)' }} />
+             <motion.div style={{ position: 'absolute', inset: 0, opacity: op4, background: 'radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.2) 0%, transparent 70%)' }} />
             
-            {/* Overlay to unify contrast */}
-            <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.2)' }} />
+             {/* Noise Texture for Premium Feel */}
+            <div style={{ position: 'absolute', inset: 0, opacity: 0.05, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/200' filter='contrast(150%25)'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.5'/%3E%3C/svg%3E")`, pointerEvents: 'none' }} />
         </div>
     );
 };
 
-// --- Custom SVG Assets (No Network Dependency) ---
-const SpoonIcon = () => (
-    <svg viewBox="0 0 512 512" style={{ width: '100%', height: '100%', filter: 'drop-shadow(0px 10px 20px rgba(0,0,0,0.5))' }}>
-        <defs>
-            <linearGradient id="spoonGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#e2e8f0" />
-                <stop offset="50%" stopColor="#94a3b8" />
-                <stop offset="100%" stopColor="#64748b" />
-            </linearGradient>
-        </defs>
-        {/* Simple, robust spoon path */}
-        <path 
-            d="M449.6 44.5c-59.3-59.3-155.6-59.3-215 0L69.3 209.8c-43.2 43.2-34.7 116.3 19 153.2l20.4 14 84.6-84.6c-4.9-39.6 9.4-80.4 39.7-110.7 34.6-34.6 83-49.8 129.5-40.4L188.8 315c-1.3 1.3-2 3-2 4.9-10.9 29.6 4.9 63.8 39.4 69.4 2 .3 4.1 .5 6.1 .5 10.9 0 21.6-4.2 29.9-12.5l187.4-187.4c59.3-59.4 59.3-155.7 0-215z"
-            fill="url(#spoonGradient)" 
-        />
-    </svg>
-);
-
-// --- The Dynamic Traveler (Reference: Spylt/Spoon) ---
-// Stays fixed but moves/rotates based on scroll section to guide the eye
+// --- The Traveler (Glowing Orb) ---
 const ScrollTraveler = () => {
     const { scrollYProgress } = useScroll();
     const springProgress = useSpring(scrollYProgress, { stiffness: 60, damping: 15 });
 
-    // Path: Starts top-right, dips to center, moves left, then centers for CTA
-    const x = useTransform(springProgress, [0, 0.3, 0.6, 1], ["40vw", "0vw", "-35vw", "0vw"]);
-    const y = useTransform(springProgress, [0, 0.3, 0.6, 1], ["-10vh", "30vh", "50vh", "20vh"]);
-    const rotate = useTransform(springProgress, [0, 0.3, 0.6, 1], [15, -45, -120, 0]);
-    const scale = useTransform(springProgress, [0, 0.1, 1], [0.5, 1, 0.8]);
+    const x = useTransform(springProgress, [0, 0.25, 0.5, 0.75, 1], ["80vw", "20vw", "80vw", "50vw", "50vw"]);
+    const y = useTransform(springProgress, [0, 0.25, 0.5, 0.75, 1], ["15vh", "40vh", "60vh", "80vh", "50vh"]);
+    const scale = useTransform(springProgress, [0, 0.5, 1], [1, 2, 0.5]);
+    const glow = useTransform(springProgress, [0, 0.5, 1], ["0px 0px 20px var(--primary)", "0px 0px 60px var(--accent)", "0px 0px 40px #fff"]);
+    const color = useTransform(springProgress, [0, 0.5, 1], ["#f59e0b", "#10b981", "#fff"]);
 
     return (
         <motion.div 
             style={{ 
                 position: 'fixed', 
-                top: '40%', 
-                left: '50%', 
-                x, y, rotate, scale,
-                zIndex: 100, // Highest Z-Index to ensure visibility
-                pointerEvents: 'none',
-                width: '300px',
-                height: '300px'
+                top: 0, left: 0,
+                x, y, scale,
+                width: '20px',
+                height: '20px',
+                borderRadius: '50%',
+                background: color,
+                boxShadow: glow,
+                zIndex: 50,
+                pointerEvents: 'none'
             }}
-        >
-            <SpoonIcon />
-        </motion.div>
+        />
     );
 };
 
-// --- Components ---
-
-const ScrollSection = ({ children, height = "200vh" }) => {
+// --- Section Component ---
+const ScrollSection = ({ children, height = "150vh" }) => {
   const ref = useRef(null);
-  
-  // Adjusted for stickiness: We want 0-1 to represent the time it's sticky.
-  const { scrollYProgress: stickyProgress } = useScroll({
-    target: ref, offset: ["start start", "end end"]
-  });
-
-  const smoothProgress = useSpring(stickyProgress, { stiffness: 40, damping: 20, restDelta: 0.001 });
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
+  const smoothProgress = useSpring(scrollYProgress, { stiffness: 40, damping: 20 });
 
   return (
     <div ref={ref} style={{ height, position: 'relative' }}>
@@ -97,175 +72,154 @@ const ScrollSection = ({ children, height = "200vh" }) => {
   );
 };
 
-// --- VFX Components ---
-
-const FloatingParticles = () => (
-    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 5 }}>
-      {[...Array(12)].map((_, i) => (
-        <motion.div
-          key={i}
-          style={{
-            position: 'absolute', width: Math.random() * 4 + 2, height: Math.random() * 4 + 2, borderRadius: '50%', background: 'rgba(255, 255, 255, 0.4)',
-            left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%`, willChange: 'transform, opacity'
-          }}
-          animate={{ y: [0, -60, 0], opacity: [0, 0.6, 0] }}
-          transition={{ duration: Math.random() * 5 + 5, repeat: Infinity, ease: "easeInOut" }}
-        />
-      ))}
-    </div>
-);
-
-const SteamVent = () => (
-     <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 10 }}>
-        {[...Array(5)].map((_, i) => (
-          <motion.div
-            key={i}
-            style={{
-              position: 'absolute', bottom: '-20%', left: `${20 + Math.random() * 60}%`, width: '300px', height: '500px',
-              background: 'radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%)', filter: 'blur(30px)', borderRadius: '50%', transformOrigin: 'bottom center', willChange: 'transform, opacity'
-            }}
-            animate={{ y: [-100, -800], opacity: [0, 0.4, 0], scale: [1, 2, 3], x: [0, (Math.random() - 0.5) * 200] }}
-            transition={{ duration: 8 + Math.random() * 5, repeat: Infinity, ease: "linear", delay: Math.random() * 5 }}
-          />
-        ))}
-     </div>
-);
-
-const ParticleExplosion = ({ color = "#fca5a5" }) => (
-    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 20 }}>
-       {[...Array(20)].map((_, i) => (
+// --- VFX ---
+const ParticleExplosion = ({ color }) => (
+    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 1 }}>
+       {[...Array(15)].map((_, i) => (
          <motion.div
            key={i}
            style={{
-             position: 'absolute', left: '50%', top: '50%', width: Math.random() * 6 + 3, height: Math.random() * 6 + 3, borderRadius: '50%', background: color, filter: 'blur(1px)', boxShadow: `0 0 10px ${color}`, willChange: 'transform, opacity'
+             position: 'absolute', left: '50%', top: '50%', width: Math.random() * 4 + 2, height: Math.random() * 4 + 2, borderRadius: '50%', background: color,
            }}
-           animate={{ x: (Math.random() - 0.5) * 1200, y: (Math.random() - 0.5) * 1200, opacity: [0, 1, 0, 0], scale: [0, 1.5, 0] }}
-           transition={{ duration: 4 + Math.random() * 3, repeat: Infinity, ease: "easeOut", delay: Math.random() * 2 }}
+           animate={{ 
+               x: (Math.random() - 0.5) * 800, 
+               y: (Math.random() - 0.5) * 800, 
+               opacity: [0, 1, 0],
+               scale: [0, 1, 0]
+           }}
+           transition={{ duration: 3 + Math.random() * 2, repeat: Infinity, ease: "easeOut", delay: Math.random() * 2 }}
          />
        ))}
     </div>
 );
 
-// --- Main Page ---
-
 const Home = () => {
   return (
-    <div style={{ color: '#f8fafc', fontFamily: '"Inter", sans-serif', minHeight: '900vh' }}>
-      
+    <div style={{ color: 'var(--text-primary)', fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
       <GlobalBackground />
-      <ScrollTraveler /> {/* The "Dynamic" element */}
+      <ScrollTraveler />
 
-      {/* 1. HERO SECTION - Extended Visibility */}
-      <ScrollSection height="300vh">
+      {/* 1. HERO */}
+      <ScrollSection height="200vh">
         {(progress) => {
-           // Range extended: stays visible until 0.8, then quick fade
-           const scale = useTransform(progress, [0, 0.6], [1, 3.5]); 
-           const rotate = useTransform(progress, [0, 0.6], [0, 90]);
-           const opacity = useTransform(progress, [0.6, 0.85], [1, 0]); // Stays visible much longer
-           
-           const textY = useTransform(progress, [0, 0.6], [0, -150]);
-           const textOp = useTransform(progress, [0, 0.4], [1, 0]);
-
-           return (
-             <>
-               <FloatingParticles />
-               
-               <motion.div 
-                 style={{ 
-                   position: 'absolute', width: '45vh', height: '45vh', borderRadius: '50%',
-                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                   scale, rotate, opacity,
-                   boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
-                   overflow: 'hidden', zIndex: 10,
-                   willChange: 'transform, opacity'
-                 }}
-               >
-                   <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=1000&auto=format&fit=crop" alt="Healthy Bowl" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-               </motion.div>
-
-               <motion.div style={{ position: 'absolute', opacity: textOp, y: textY, zIndex: 20, textAlign: 'center' }}>
-                  <motion.h1 style={{ fontFamily: '"Playfair Display", serif', fontSize: 'clamp(5rem, 12vw, 9rem)', fontWeight: '700', letterSpacing: '-0.03em', lineHeight: 0.9, textShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
-                    Eat In <span style={{ color: '#4ade80', fontStyle: 'italic' }}>Sync.</span>
-                  </motion.h1>
-                  <p style={{ fontSize: '1.5rem', opacity: 0.9, fontWeight: 300, marginTop: '2rem', fontStyle: 'italic' }}>
-                    Food that loves you back.
-                  </p>
-               </motion.div>
-             </>
-           );
-        }}
-      </ScrollSection>
-
-      {/* 2. BIO SYNC - Seamless Entry */}
-      <ScrollSection height="250vh">
-        {(progress) => {
-           // Enters while Hero is scaling out
-           const y = useTransform(progress, [0, 0.4], [100, 0]);
-           const opacity = useTransform(progress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]); // Fade in quickly
+           const scale = useTransform(progress, [0, 0.5], [1, 0.8]);
+           const opacity = useTransform(progress, [0.3, 0.6], [1, 0]);
+           const y = useTransform(progress, [0, 0.5], [0, -100]);
            
            return (
-             <>
-               <SteamVent /> 
-               <FloatingParticles />
-
-               <motion.div style={{ y, opacity, zIndex: 10, textAlign: 'center', background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(12px)', padding: '4rem', borderRadius: '2rem', border: '1px solid rgba(255,255,255,0.05)', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
-                  <h2 style={{ fontFamily: '"Playfair Display", serif', fontSize: '4.5rem', fontWeight: 700, color: '#d1fae5', marginBottom: '1rem' }}>Bio Sync.</h2>
-                  <p style={{ fontSize: '2rem', maxWidth: '600px', lineHeight: 1.4, fontWeight: 300 }}>
-                    Your biology is unique.<br/><span style={{ color: '#6ee7b7', fontWeight: 600 }}>Why guess?</span>
-                  </p>
-               </motion.div>
-             </>
-           );
-        }}
-      </ScrollSection>
-
-      {/* 3. TASTE MATCH - Seamless Overlap */}
-      <ScrollSection height="250vh">
-        {(progress) => {
-          const scale = useTransform(progress, [0, 0.5], [0.8, 1]);
-          const opacity = useTransform(progress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
-          const rotateX = useTransform(progress, [0, 0.5], [20, 0]);
-
-          return (
-             <div style={{ perspective: '1000px', width: '100%', display: 'flex', justifyContent: 'center' }}>
-                <ParticleExplosion color="#fbbf24" />
-                <ParticleExplosion color="#a78bfa" />
-                <FloatingParticles />
-
-                <motion.div style={{ scale, opacity, rotateX, zIndex: 10, textAlign: 'center', background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(12px)', padding: '4rem', borderRadius: '2rem', border: '1px solid rgba(255,255,255,0.05)', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
-                   <h2 style={{ fontFamily: '"Playfair Display", serif', fontSize: '4.5rem', fontWeight: 700, color: '#ddd6fe', marginBottom: '1rem' }}>Taste Match.</h2>
-                   <p style={{ fontSize: '2rem', maxWidth: '600px', lineHeight: 1.4, fontWeight: 300 }}>
-                     <span style={{ color: '#fbbf24', fontFamily: '"Playfair Display", serif', fontStyle: 'italic' }}>Explosive</span> flavor.<br/>Perfectly matched.
-                   </p>
+             <motion.div style={{ scale, opacity, y, textAlign: 'center', zIndex: 10, position: 'relative' }}>
+                <motion.div 
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1, ease: 'easeOut' }}
+                >
+                    <h1 style={{ fontSize: 'clamp(4rem, 10vw, 8rem)', fontWeight: 800, lineHeight: 0.9, marginBottom: '1rem', letterSpacing: '-0.04em' }}>
+                        Eat In <span style={{ 
+                            background: 'linear-gradient(135deg, var(--primary) 0%, #d97706 100%)', 
+                            WebkitBackgroundClip: 'text', 
+                            WebkitTextFillColor: 'transparent',
+                            fontStyle: 'italic'
+                        }}>Sync.</span>
+                    </h1>
                 </motion.div>
-             </div>
-          );
+                
+                <motion.p 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 0.8 }}
+                    transition={{ delay: 0.5, duration: 1 }}
+                    style={{ fontSize: '1.5rem', fontWeight: 300, maxWidth: '600px', margin: '0 auto' }}
+                >
+                    Food that understands your biology.
+                </motion.p>
+                
+                <ParticleExplosion color="var(--primary)" />
+             </motion.div>
+           );
         }}
       </ScrollSection>
 
-      {/* 4. FINAL CTA */}
-      <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-         {/* Background handled by GlobalBackground */}
-         <motion.div 
-           initial={{ opacity: 0, y: 30 }}
-           whileInView={{ opacity: 1, y: 0 }}
-           transition={{ duration: 0.8 }}
-           viewport={{ once: true }}
-           style={{ textAlign: 'center', zIndex: 10 }}
+      {/* 2. BIO SYNC */}
+      <ScrollSection height="200vh">
+        {(progress) => {
+           const x = useTransform(progress, [0, 0.3, 0.7, 1], [1000, 0, 0, -1000]);
+           const opacity = useTransform(progress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
+           const rotate = useTransform(progress, [0, 0.3], [10, 0]);
+
+           return (
+             <motion.div style={{ x, opacity, rotate, zIndex: 10 }}>
+                <div 
+                    className="glass"
+                    style={{ 
+                        padding: '4rem', 
+                        borderRadius: '2rem', 
+                        maxWidth: '800px', 
+                        background: 'rgba(16, 185, 129, 0.05)',
+                        border: '1px solid rgba(16, 185, 129, 0.2)',
+                        textAlign: 'center'
+                    }}
+                >
+                    <h2 style={{ fontSize: '4rem', color: 'var(--accent)', marginBottom: '1rem' }}>Bio Sync.</h2>
+                    <p style={{ fontSize: '1.8rem', lineHeight: 1.4, opacity: 0.9 }}>
+                        Stop guessing. <br/>
+                        Align your diet with your unique DNA and health data.
+                    </p>
+                </div>
+                <ParticleExplosion color="var(--accent)" />
+             </motion.div>
+           );
+        }}
+      </ScrollSection>
+
+      {/* 3. TASTE MATCH */}
+      <ScrollSection height="200vh">
+        {(progress) => {
+           const scale = useTransform(progress, [0, 0.5], [0.5, 1]);
+           const opacity = useTransform(progress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
+           
+           return (
+             <motion.div style={{ scale, opacity, zIndex: 10 }}>
+                 <div
+                    className="glass" 
+                    style={{
+                        padding: '4rem',
+                        borderRadius: '2rem',
+                        maxWidth: '800px',
+                        textAlign: 'center',
+                        background: 'rgba(59, 130, 246, 0.05)',
+                        border: '1px solid rgba(59, 130, 246, 0.2)'
+                    }}
+                 >
+                    <h2 style={{ fontSize: '4rem', color: '#60a5fa', marginBottom: '1rem' }}>Taste Match.</h2>
+                    <p style={{ fontSize: '1.8rem', lineHeight: 1.4, opacity: 0.9 }}>
+                        Delicious shouldn't mean dangerous. <br/>
+                        Find safer alternatives that taste just as good.
+                    </p>
+                 </div>
+                 <ParticleExplosion color="#60a5fa" />
+             </motion.div>
+           );
+        }}
+      </ScrollSection>
+
+      {/* 4. CTA */}
+      <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative', zIndex: 10 }}>
+         <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            style={{ textAlign: 'center' }}
          >
-             <h2 style={{ fontFamily: '"Playfair Display", serif', fontSize: '4rem', fontWeight: '800', marginBottom: '2rem', letterSpacing: '-0.02em' }}>Ready to dine?</h2>
-             <div style={{ gap: '1.5rem', display: 'flex', justifyContent: 'center' }}>
-               <Link href="/auth">
-                 <button className="btn btn-primary" style={{ fontFamily: '"Inter", sans-serif', fontSize: '1.2rem', padding: '1rem 3rem', borderRadius: '3rem', fontWeight: 600 }}>Get Started</button>
-               </Link>
-               <Link href="/dashboard">
-                 <button className="btn btn-outline" style={{ fontFamily: '"Inter", sans-serif', fontSize: '1.2rem', padding: '1rem 3rem', borderRadius: '3rem', color: '#fff', borderColor: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>Demo Mode</button>
-               </Link>
+             <h2 style={{ fontSize: '5rem', marginBottom: '2rem' }}>Ready?</h2>
+             <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center' }}>
+                <Link href="/auth">
+                    <button className="btn-primary" style={{ padding: '1rem 3rem', fontSize: '1.2rem' }}>Get Started</button>
+                </Link>
+                <Link href="/dashboard">
+                    <button className="btn-outline" style={{ padding: '1rem 3rem', fontSize: '1.2rem' }}>Live Demo</button>
+                </Link>
              </div>
          </motion.div>
-         <footer style={{ position: 'absolute', bottom: '2rem', opacity: 0.4, fontSize: '0.9rem', fontFamily: '"Inter", sans-serif' }}>
-           © 2024 EatInSync. Limitless Hackathon.
-         </footer>
       </div>
 
     </div>
