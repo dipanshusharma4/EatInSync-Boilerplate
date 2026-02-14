@@ -2,7 +2,8 @@
 node_modules/
 
 # Environment files
-.env
+backend-node/.env
+frontend/.env
 .env.*
 
 # Build outputs
