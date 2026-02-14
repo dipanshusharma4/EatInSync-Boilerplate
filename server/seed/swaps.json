@@ -1,0 +1,143 @@
+{
+    "peanut": [
+        "sunflower seeds",
+        "almonds (if not allergic)",
+        "cashews (if not allergic)",
+        "tahini",
+        "soy butter"
+    ],
+    "peanut butter": [
+        "sunflower seed butter",
+        "almond butter",
+        "cashew butter",
+        "tahini",
+        "soy nut butter"
+    ],
+    "milk": [
+        "almond milk",
+        "soy milk",
+        "oat milk",
+        "coconut milk",
+        "rice milk",
+        "cashew milk"
+    ],
+    "cream": [
+        "coconut cream",
+        "cashew cream",
+        "oat cream",
+        "soy cream"
+    ],
+    "cheese": [
+        "vegan cheese",
+        "nutritional yeast",
+        "tofu (for ricotta)",
+        "cashew cheese"
+    ],
+    "egg": [
+        "flax egg",
+        "chia egg",
+        "applesauce (baking)",
+        "banana (baking)",
+        "tofu (scramble)",
+        "aquafaba"
+    ],
+    "gluten": [
+        "gluten-free flour blend",
+        "almond flour",
+        "coconut flour",
+        "rice flour",
+        "chickpea flour",
+        "oat flour (certified gf)"
+    ],
+    "pasta": [
+        "rice noodles",
+        "zucchini noodles",
+        "spaghetti squash",
+        "chickpea pasta",
+        "lentil pasta",
+        "quinoa pasta"
+    ],
+    "bread": [
+        "gluten-free bread",
+        "corn tortilla",
+        "lettuce wrap",
+        "rice cake"
+    ],
+    "soy": [
+        "chickpeas",
+        "lentils",
+        "black beans",
+        "seitan (if not gluten allergic)",
+        "jackfruit"
+    ],
+    "soy sauce": [
+        "coconut aminos",
+        "tamari (if gluten only)",
+        "liquid aminos (check soy)",
+        "fish sauce (if not allergic)"
+    ],
+    "tofu": [
+        "chickpea tofu",
+        "seitan",
+        "tempeh (if soy ok)",
+        "meat (if not veg)"
+    ],
+    "fish": [
+        "heart of palm (texture)",
+        "jackfruit (texture)",
+        "chickpeas",
+        "tofu",
+        "seaweed (flavor)"
+    ],
+    "shellfish": [
+        "king oyster mushroom",
+        "heart of palm",
+        "artichoke hearts"
+    ],
+    "chicken": [
+        "tofu",
+        "seitan",
+        "tempeh",
+        "chickpeas",
+        "jackfruit",
+        "cauliflower"
+    ],
+    "beef": [
+        "lentils",
+        "black beans",
+        "mushrooms",
+        "tempeh",
+        "tvp",
+        "seitan"
+    ],
+    "pork": [
+        "jackfruit",
+        "seitan",
+        "tempeh",
+        "mushrooms",
+        "eggplant"
+    ],
+    "tomato": [
+        "roasted red pepper",
+        "pumpkin puree",
+        "carrot puree",
+        "beet puree",
+        "nomato sauce"
+    ],
+    "chocolate": [
+        "carob"
+    ],
+    "caffeine": [
+        "decaf coffee",
+        "herbal tea",
+        "chicory root",
+        "dandelion root"
+    ],
+    "alcohol": [
+        "grape juice",
+        "apple juice",
+        "broth",
+        "water",
+        "vinegar (small amounts)"
+    ]
+}

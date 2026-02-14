@@ -1,0 +1,146 @@
+[
+    {
+        "Recipe_id": "99001",
+        "Recipe_title": "Chicken Satay with Peanut Sauce",
+        "ingredients": [
+            {
+                "ingredient": "chicken breast",
+                "quantity": "500g"
+            },
+            {
+                "ingredient": "peanut butter",
+                "quantity": "1/2 cup"
+            },
+            {
+                "ingredient": "soy sauce",
+                "quantity": "2 tbsp"
+            },
+            {
+                "ingredient": "lime juice",
+                "quantity": "1 tbsp"
+            },
+            {
+                "ingredient": "coconut milk",
+                "quantity": "1/2 cup"
+            }
+        ],
+        "Calories": 450,
+        "Region": "Thai"
+    },
+    {
+        "Recipe_id": "99002",
+        "Recipe_title": "Classic Beef Burger",
+        "ingredients": [
+            {
+                "ingredient": "ground beef",
+                "quantity": "500g"
+            },
+            {
+                "ingredient": "hamburger bun",
+                "quantity": "4"
+            },
+            {
+                "ingredient": "cheddar cheese",
+                "quantity": "4 slices"
+            },
+            {
+                "ingredient": "lettuce",
+                "quantity": "4 leaves"
+            },
+            {
+                "ingredient": "tomato",
+                "quantity": "4 slices"
+            }
+        ],
+        "Calories": 600,
+        "Region": "American"
+    },
+    {
+        "Recipe_id": "99003",
+        "Recipe_title": "Vegan Lentil Soup",
+        "ingredients": [
+            {
+                "ingredient": "lentils",
+                "quantity": "1 cup"
+            },
+            {
+                "ingredient": "carrot",
+                "quantity": "2"
+            },
+            {
+                "ingredient": "celery",
+                "quantity": "2 stalks"
+            },
+            {
+                "ingredient": "vegetable broth",
+                "quantity": "4 cups"
+            },
+            {
+                "ingredient": "onion",
+                "quantity": "1"
+            }
+        ],
+        "Calories": 250,
+        "Region": "Global"
+    },
+    {
+        "Recipe_id": "99004",
+        "Recipe_title": "Spaghetti Carbonara",
+        "ingredients": [
+            {
+                "ingredient": "spaghetti",
+                "quantity": "400g"
+            },
+            {
+                "ingredient": "egg",
+                "quantity": "3"
+            },
+            {
+                "ingredient": "parmesan cheese",
+                "quantity": "1/2 cup"
+            },
+            {
+                "ingredient": "bacon",
+                "quantity": "150g"
+            },
+            {
+                "ingredient": "black pepper",
+                "quantity": "1 tsp"
+            }
+        ],
+        "Calories": 550,
+        "Region": "Italian"
+    },
+    {
+        "Recipe_id": "99005",
+        "Recipe_title": "Shrimp Scampi",
+        "ingredients": [
+            {
+                "ingredient": "shrimp",
+                "quantity": "500g"
+            },
+            {
+                "ingredient": "linguine",
+                "quantity": "400g"
+            },
+            {
+                "ingredient": "garlic",
+                "quantity": "4 cloves"
+            },
+            {
+                "ingredient": "butter",
+                "quantity": "4 tbsp"
+            },
+            {
+                "ingredient": "white wine",
+                "quantity": "1/2 cup"
+            },
+            {
+                "ingredient": "lemon juice",
+                "quantity": "1 tbsp"
+            }
+        ],
+        "Calories": 480,
+        "Region": "Italian"
+    }
+]
