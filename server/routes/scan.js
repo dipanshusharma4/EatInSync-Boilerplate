@@ -6,7 +6,7 @@ const auth = require('../middleware/auth');
 const User = require('../models/User');
 const Profile = require('../models/Profile');
 const { analyzeDish } = require('../services/compatibilityEngine');
-const { getIngredientFlavor, getCanonicalIngredient } = require('../services/foodoscope');
+const { searchRecipes, getRecipeDetails, getIngredientFlavor, getCanonicalIngredient } = require('../services/foodoscope');
 
 // Configure Multer for memory storage
 const storage = multer.memoryStorage();
@@ -52,34 +52,49 @@ router.post('/scan-menu', auth, upload.single('image'), async (req, res) => {
           Example: { "dishes": ["Grilled Salmon", "Risotto", "Tiramisu"] }
         `;
 
-        // 3. Configure Gemini with JSON Mode
-        const generationConfig = {
-            responseMimeType: "application/json",
-            temperature: 0.4
-        };
-
         let text = '';
-        try {
-            // Attempt with Gemini 2.0 Flash
-            console.log("Sending to Gemini (JSON Mode)...");
-            // using gemini-2.0-flash as it is available
-            const model = genAI.getGenerativeModel({
-                model: "gemini-2.0-flash",
-                generationConfig: { responseMimeType: "application/json" }
-            });
+        let retries = 0;
+        const maxRetries = 3;
 
-            const result = await model.generateContent([prompt, imagePart]);
-            const response = await result.response;
-            text = response.text();
-        } catch (err) {
-            console.warn("Primary model failed, trying fallback...", err.message);
-            // Fallback to gemini-flash-latest
-            const modelFallback = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
-            const result = await modelFallback.generateContent([prompt, imagePart]);
-            text = (await result.response).text();
+        while (retries < maxRetries) {
+            try {
+                // Attempt with Gemini 2.0 Flash
+                console.log(`Sending to Gemini (Attempt ${retries + 1}/${maxRetries})...`);
+                const model = genAI.getGenerativeModel({
+                    model: "gemini-2.0-flash",
+                    generationConfig: { responseMimeType: "application/json" }
+                });
 
-            // Clean markdown code blocks if present (Pro Vision often adds them)
-            text = text.replace(/```json/g, '').replace(/```/g, '').trim();
+                const result = await model.generateContent([prompt, imagePart]);
+                const response = await result.response;
+                text = response.text();
+                break; // Success
+            } catch (err) {
+                console.warn(`Model failed (Attempt ${retries + 1}/${maxRetries}):`, err.message);
+
+                // If 429 logic (Rate Limit) - could wait, but for now we just fallback or retry
+                if (err.message.includes('429') || err.message.includes('Quota') || err.status === 429) {
+                    const wait = 2000 * (retries + 1);
+                    console.log(`Rate limited. Waiting ${wait}ms...`);
+                    await new Promise(r => setTimeout(r, wait));
+                }
+
+                retries++;
+
+                if (retries >= maxRetries) {
+                    // Fallback to older model on last attempt
+                    try {
+                        console.log("Trying fallback to gemini-1.5-flash...");
+                        const modelFallback = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+                        const result = await modelFallback.generateContent([prompt, imagePart]);
+                        text = (await result.response).text();
+                        text = text.replace(/```json/g, '').replace(/```/g, '').trim();
+                    } catch (finalErr) {
+                        console.error("All models failed.");
+                        throw finalErr;
+                    }
+                }
+            }
         }
 
         // 4. Parse Strict JSON
@@ -94,42 +109,81 @@ router.post('/scan-menu', auth, upload.single('image'), async (req, res) => {
         }
 
         // 5. Send to Ranking Engine
-        // We need to fetch/guess ingredients for these dishes to run analysis
-        // Since we don't have ingredients, we'll try to get them via a quick heuristic or search
-        // For now, let's assume the molecular analysis tries to guess ingredients or relies on flavorDB lookup by dish name
-
         const analyzedDishesData = [];
 
-        // Limit parallel processing
+        // Sequential processing to avoid slamming FlavorDB/RecipeDB
         for (const name of dishNames) {
             try {
-                // Mocking ingredient lookup or using name for basic analysis
-                // In a real scenario, we might call Spoonacular or Gemini again to get ingredients for each dish
-                // For speed, let's treat the dish name as a potential flavor source + do a dummy analysis
+                console.log(`Analyzing dish: ${name}`);
 
-                // We will construct a minimal dishDetails object
+                // A. Search RecipeDB
+                // Try to find a recipe matching the dish name
+                const recipeResults = await searchRecipes(name);
+                let ingredients = [];
+                let dishTitle = name;
+
+                if (recipeResults && recipeResults.length > 0) {
+                    // Use the best match
+                    const bestMatch = recipeResults[0];
+                    dishTitle = bestMatch.Recipe_title || name;
+
+                    // Get full details (ingredients)
+                    const details = await getRecipeDetails(bestMatch.Recipe_id);
+                    if (details) {
+                        // Parse ingredients from details
+                        // details can be { recipe: {...}, ingredients: [...] } or just { ... }
+                        const rawIngs = details.ingredients || (details.recipe && details.recipe.ingredients) || [];
+
+                        if (Array.isArray(rawIngs)) {
+                            ingredients = rawIngs.map(ing => ({
+                                // Normalize to object with 'ingredient' key for compatibilityEngine
+                                ingredient: typeof ing === 'string' ? ing : (ing.ingredient || ing.ingredient_Phrase || ing.name)
+                            }));
+                        }
+                    }
+                }
+
+                // Fallback: If no recipe found, we interpret the dish name itself as the primary ingredient
+                if (ingredients.length === 0) {
+                    ingredients = [{ ingredient: name }];
+                }
+
+                // B. Fetch FlavorDB Data for ingredients
+                // Limit to top 20 to preserve resources
+                const ingredientsToAnalyze = ingredients.slice(0, 20);
+                const flavorNameList = ingredientsToAnalyze.map(ing => ing.ingredient || dishTitle);
+
+                const flavorDataPromises = flavorNameList.map(n => getIngredientFlavor(n));
+                const flavorData = await Promise.all(flavorDataPromises);
+
+                // C. Analyze using Compatibility Engine (BCS Calculation)
                 const dishDetails = {
-                    dishName: name,
-                    ingredients: [{ ingredient: name }] // Treat the whole dish as an ingredient for initial flavor lookup
+                    dishName: dishTitle,
+                    ingredients: ingredients
                 };
 
-                // Get flavor data
-                const flavorData = await getIngredientFlavor(name);
-
-                // Analyze
-                const analysis = analyzeDish(dishDetails, profile, [flavorData]);
+                const analysis = analyzeDish(dishDetails, profile, flavorData);
 
                 analyzedDishesData.push({
                     name,
-                    description: "Detected from menu",
+                    description: ingredients.length > 1 ? `Analyzed as "${dishTitle}"` : "Approximated from name",
                     score: Math.round((analysis.bioScore + analysis.tasteScore) / 2),
-                    bioScore: analysis.bioScore,
+                    bioScore: analysis.bioScore, // BCS
                     tasteScore: analysis.tasteScore,
                     reasons: analysis.warnings.length > 0 ? analysis.warnings : analysis.breakdown,
                     tags: analysis.block ? ['Blocked'] : analysis.bioScore > 80 ? ['Bio-Compatible'] : []
                 });
+
             } catch (innerErr) {
                 console.error(`Failed to analyze dish ${name}`, innerErr);
+                analyzedDishesData.push({
+                    name,
+                    score: 50,
+                    bioScore: 50,
+                    tasteScore: 50,
+                    reasons: ["Analysis failed"],
+                    tags: ["Error"]
+                });
             }
         }
 

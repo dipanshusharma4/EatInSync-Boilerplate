@@ -8,11 +8,11 @@ const BASE_URL = 'https://api.foodoscope.com';
 const API_KEY = process.env.FOODOSCOPE_API_KEY || 'TNV8H8XyZuGCCcptKVfSDg_l69aLBPsGSEZisWyB6ac-rXFP'; // Fallback for hackathon speed if env missing
 
 const client = axios.create({
-  baseURL: BASE_URL,
-  headers: {
-    'Authorization': `Bearer ${API_KEY}`,
-    'Content-Type': 'application/json'
-  }
+    baseURL: BASE_URL,
+    headers: {
+        'Authorization': `Bearer ${API_KEY}`,
+        'Content-Type': 'application/json'
+    }
 });
 
 /**
@@ -60,57 +60,57 @@ setInterval(() => {
  * Endpoint: /recipe2-api/recipe-bytitle/recipeByTitle?title={title}
  */
 const searchRecipes = async (query, page = null, limit = null) => {
-  try {
-    const cleanQuery = query.toLowerCase().trim();
-    
-    let allRecipes = [];
+    try {
+        const cleanQuery = query.toLowerCase().trim();
 
-    // 1. Check Search Cache
-    if (searchCache.has(cleanQuery)) {
-        const cached = searchCache.get(cleanQuery);
-        if (Date.now() - cached.timestamp < SEARCH_CACHE_TTL) {
-            console.log(`[Cache] Hit for search: "${cleanQuery}"`);
-            allRecipes = cached.data;
-        } else {
-            searchCache.delete(cleanQuery); // Expired
+        let allRecipes = [];
+
+        // 1. Check Search Cache
+        if (searchCache.has(cleanQuery)) {
+            const cached = searchCache.get(cleanQuery);
+            if (Date.now() - cached.timestamp < SEARCH_CACHE_TTL) {
+                console.log(`[Cache] Hit for search: "${cleanQuery}"`);
+                allRecipes = cached.data;
+            } else {
+                searchCache.delete(cleanQuery); // Expired
+            }
         }
-    }
 
-    // 2. Fetch if not in cache
-    if (allRecipes.length === 0) {
-        const encodedQuery = encodeURIComponent(query);
-        const response = await client.get(`/recipe2-api/recipe-bytitle/recipeByTitle?title=${encodedQuery}`);
-        
-        if (response.data && response.data.success && response.data.data) {
-            allRecipes = response.data.data;
-            // Store in cache
-            searchCache.set(cleanQuery, { data: allRecipes, timestamp: Date.now() });
-            console.log(`[Cache] Miss for search: "${cleanQuery}" (Fetched ${allRecipes.length})`);
+        // 2. Fetch if not in cache
+        if (allRecipes.length === 0) {
+            const encodedQuery = encodeURIComponent(query);
+            const response = await client.get(`/recipe2-api/recipe-bytitle/recipeByTitle?title=${encodedQuery}`);
+
+            if (response.data && response.data.success && response.data.data) {
+                allRecipes = response.data.data;
+                // Store in cache
+                searchCache.set(cleanQuery, { data: allRecipes, timestamp: Date.now() });
+                console.log(`[Cache] Miss for search: "${cleanQuery}" (Fetched ${allRecipes.length})`);
+            }
         }
+
+        // Pagination Logic (In-Memory)
+        if (page && limit) {
+            const pageNum = parseInt(page);
+            const limitNum = parseInt(limit);
+            const startIndex = (pageNum - 1) * limitNum;
+            const endIndex = startIndex + limitNum;
+
+            const sliced = allRecipes.slice(startIndex, endIndex);
+
+            return {
+                results: sliced,
+                total: allRecipes.length
+            };
+        }
+
+        // Backward Compatibility: Return full array if no pagination params
+        return allRecipes;
+
+    } catch (error) {
+        console.error('Error searching recipes:', error.message);
+        return page && limit ? { results: [], total: 0 } : [];
     }
-
-    // Pagination Logic (In-Memory)
-    if (page && limit) {
-        const pageNum = parseInt(page);
-        const limitNum = parseInt(limit);
-        const startIndex = (pageNum - 1) * limitNum;
-        const endIndex = startIndex + limitNum;
-        
-        const sliced = allRecipes.slice(startIndex, endIndex);
-        
-        return {
-            results: sliced,
-            total: allRecipes.length
-        };
-    }
-
-    // Backward Compatibility: Return full array if no pagination params
-    return allRecipes;
-
-  } catch (error) {
-    console.error('Error searching recipes:', error.message);
-    return page && limit ? { results: [], total: 0 } : [];
-  }
 };
 
 /**
@@ -118,14 +118,14 @@ const searchRecipes = async (query, page = null, limit = null) => {
  * Endpoint: /recipe2-api/search-recipe/{id}
  */
 const getRecipeDetails = async (recipeId) => {
-  try {
-    // console.log(`[Foodoscope] Fetching details for Recipe ID: ${recipeId}`); // Reduce noise
-    const response = await client.get(`/recipe2-api/search-recipe/${recipeId}`);
-    return response.data;
-  } catch (error) {
-    console.error(`[Foodoscope] Error fetching recipe details for ID ${recipeId}:`, error.message);
-    return null;
-  }
+    try {
+        // console.log(`[Foodoscope] Fetching details for Recipe ID: ${recipeId}`); // Reduce noise
+        const response = await client.get(`/recipe2-api/search-recipe/${recipeId}`);
+        return response.data;
+    } catch (error) {
+        console.error(`[Foodoscope] Error fetching recipe details for ID ${recipeId}:`, error.message);
+        return null;
+    }
 };
 
 /**
@@ -135,7 +135,7 @@ const getRecipeDetails = async (recipeId) => {
 const getCanonicalIngredient = (name) => {
     if (!name) return "";
     let cleanName = name.toLowerCase().trim();
-    
+
     // 1. Check if it's a key
     if (synonyms[cleanName]) return cleanName;
 
@@ -145,7 +145,7 @@ const getCanonicalIngredient = (name) => {
             return canonical;
         }
     }
-    
+
     return cleanName;
 };
 
@@ -156,7 +156,7 @@ const getCanonicalIngredient = (name) => {
 const getIngredientFlavor = async (ingredientName) => {
     try {
         if (!ingredientName) return null;
-        
+
         // 1. Canonicalize
         const originalName = ingredientName.split(',')[0].trim(); // Remove quantity/prep first
         const cleanName = getCanonicalIngredient(originalName);
@@ -167,12 +167,12 @@ const getIngredientFlavor = async (ingredientName) => {
             const cached = flavorCache.get(cleanName);
             // No expiration check for persistent items unless we want to refresh weekly
             // console.log(`[Foodoscope] Cache hit for "${cleanName}"`);
-            return { ...cached, name: ingredientName }; 
+            return { ...cached, name: ingredientName };
         }
 
         // 3. API Call
         const response = await client.get(`/flavordb/molecules_data/by-commonName?common_name=${encodeURIComponent(cleanName)}`);
-        
+
         if (response.data && response.data.content && response.data.content.length > 0) {
             // Return the first match
             const data = response.data.content[0];
@@ -181,25 +181,25 @@ const getIngredientFlavor = async (ingredientName) => {
                 canonicalName: cleanName,
                 foundName: data.common_name,
                 id: data._id,
-                flavorProfile: data.flavor_profile || '', 
-                functionalGroups: data.functional_groups || '', 
+                flavorProfile: data.flavor_profile || '',
+                functionalGroups: data.functional_groups || '',
                 natural: data.natural,
                 bitter: data.bitter,
                 super_sweet: data.super_sweet
             };
-            
+
             // 4. Store in Cache
             flavorCache.set(cleanName, result);
             cacheDirty = true; // Mark for save
-            
+
             return { ...result, name: ingredientName };
         } else {
             console.log(`[Foodoscope] No flavor data found for: ${cleanName}`);
             // Cache the miss to avoid repeated 404s? Yes, for 24h.
-             const miss = { notFound: true, canonicalName: cleanName };
-             flavorCache.set(cleanName, miss);
-             cacheDirty = true;
-             return { ...miss, name: ingredientName };
+            const miss = { notFound: true, canonicalName: cleanName };
+            flavorCache.set(cleanName, miss);
+            cacheDirty = true;
+            return { ...miss, name: ingredientName };
         }
     } catch (error) {
         console.error(`[Foodoscope] FlavorDB lookup failed for ${ingredientName}:`, error.message);
@@ -208,8 +208,8 @@ const getIngredientFlavor = async (ingredientName) => {
 };
 
 module.exports = {
-  searchRecipes,
-  getRecipeDetails,
-  getIngredientFlavor,
-  getCanonicalIngredient
+    searchRecipes,
+    getRecipeDetails,
+    getIngredientFlavor,
+    getCanonicalIngredient
 };
