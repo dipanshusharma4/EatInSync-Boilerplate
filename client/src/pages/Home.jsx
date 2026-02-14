@@ -28,6 +28,24 @@ const GlobalBackground = () => {
     );
 };
 
+// --- Custom SVG Assets (No Network Dependency) ---
+const SpoonIcon = () => (
+    <svg viewBox="0 0 512 512" style={{ width: '100%', height: '100%', filter: 'drop-shadow(0px 10px 20px rgba(0,0,0,0.5))' }}>
+        <defs>
+            <linearGradient id="spoonGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#e2e8f0" />
+                <stop offset="50%" stopColor="#94a3b8" />
+                <stop offset="100%" stopColor="#64748b" />
+            </linearGradient>
+        </defs>
+        {/* Simple, robust spoon path */}
+        <path 
+            d="M449.6 44.5c-59.3-59.3-155.6-59.3-215 0L69.3 209.8c-43.2 43.2-34.7 116.3 19 153.2l20.4 14 84.6-84.6c-4.9-39.6 9.4-80.4 39.7-110.7 34.6-34.6 83-49.8 129.5-40.4L188.8 315c-1.3 1.3-2 3-2 4.9-10.9 29.6 4.9 63.8 39.4 69.4 2 .3 4.1 .5 6.1 .5 10.9 0 21.6-4.2 29.9-12.5l187.4-187.4c59.3-59.4 59.3-155.7 0-215z"
+            fill="url(#spoonGradient)" 
+        />
+    </svg>
+);
+
 // --- The Dynamic Traveler (Reference: Spylt/Spoon) ---
 // Stays fixed but moves/rotates based on scroll section to guide the eye
 const ScrollTraveler = () => {
@@ -47,17 +65,13 @@ const ScrollTraveler = () => {
                 top: '40%', 
                 left: '50%', 
                 x, y, rotate, scale,
-                zIndex: 50,
+                zIndex: 100, // Highest Z-Index to ensure visibility
                 pointerEvents: 'none',
-                filter: 'drop-shadow(0 20px 30px rgba(0,0,0,0.5))'
+                width: '300px',
+                height: '300px'
             }}
         >
-            {/* High-Quality Silver Spoon Asset */}
-            <img 
-                src="https://pngimg.com/uploads/spoon/spoon_PNG3055.png" 
-                alt="Traveler Spoon" 
-                style={{ width: '400px', height: 'auto', transform: 'rotate(45deg)' }} 
-            />
+            <SpoonIcon />
         </motion.div>
     );
 };
@@ -136,7 +150,6 @@ const ParticleExplosion = ({ color = "#fca5a5" }) => (
 
 const Home = () => {
   return (
-    // FIX: Removed solid 'background: #0f172a' to allow GlobalBackground to show
     <div style={{ color: '#f8fafc', fontFamily: '"Inter", sans-serif', minHeight: '900vh' }}>
       
       <GlobalBackground />
@@ -260,5 +273,3 @@ const Home = () => {
 };
 
 export default Home;
-
-
