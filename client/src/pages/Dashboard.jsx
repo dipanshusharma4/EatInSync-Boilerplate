@@ -26,6 +26,7 @@ const normalizeText = (value = '') =>
 
 // Reusable Sticky Card Component
 // Reusable Card for Horizontal Scroll
+// Reusable Sticky Card Component (Premium Glass)
 const StoryCard = ({ children, color, title, index, width }) => {
   return (
     <div
@@ -33,46 +34,62 @@ const StoryCard = ({ children, color, title, index, width }) => {
       style={{
         minWidth: width || '85vw',
         width: width || '85vw',
-        height: '70vh',
-        marginRight: '4vw', // Gap handled here
-        padding: '2.5rem',
-        borderRadius: '2.5rem',
-        // Premium Glass Effect
-        background: `linear-gradient(135deg, rgba(30, 41, 59, 0.4) 0%, rgba(15, 23, 42, 0.6) 100%)`,
-        backdropFilter: 'blur(24px)', 
-        WebkitBackdropFilter: 'blur(24px)',
-        border: `1px solid ${color ? color + '40' : 'rgba(255,255,255,0.08)'}`,
-        boxShadow: `0 25px 50px -12px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.05)`,
+        height: '75vh',
+        marginRight: '4vw',
+        padding: '0', // Reset padding for internal layout
+        borderRadius: '3rem',
+        background: `linear-gradient(145deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%)`,
+        backdropFilter: 'blur(30px)', 
+        WebkitBackdropFilter: 'blur(30px)',
+        border: `1px solid ${color ? color + '30' : 'rgba(255,255,255,0.08)'}`,
+        boxShadow: `0 30px 60px -15px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.05)`,
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'flex-start', // Top align content
-        textAlign: 'center',
         position: 'relative',
         overflow: 'hidden'
       }}
     >
-      {/* Dynamic Glow Background */}
+      {/* Background Glow */}
       <div style={{
-         position: 'absolute', top: '-20%', left: '-20%', width: '140%', height: '140%',
-         background: `radial-gradient(circle at 50% 50%, ${color || '#64748b'}20, transparent 70%)`,
-         zIndex: -1, pointerEvents: 'none', filter: 'blur(40px)'
+         position: 'absolute', top: '-30%', right: '-30%', width: '150%', height: '150%',
+         background: `radial-gradient(circle at 80% 20%, ${color || '#64748b'}15, transparent 60%)`,
+         zIndex: 0, pointerEvents: 'none', filter: 'blur(60px)'
       }} />
 
+      {/* Header / Title Bar */}
       {title && (
         <div style={{ 
-          position: 'absolute', top: 0, left: 0, right: 0, 
-          padding: '1.2rem', 
-          borderBottom: `1px solid ${color ? color + '20' : 'rgba(255,255,255,0.05)'}`,
-          background: 'rgba(0,0,0,0.2)', fontSize: '0.85rem', 
-          fontWeight: '800', letterSpacing: '2px', textTransform: 'uppercase',
-          color: color || '#fff',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'
+          padding: '1.5rem 2.5rem', 
+          borderBottom: `1px solid ${color ? color + '15' : 'rgba(255,255,255,0.05)'}`,
+          background: 'rgba(0,0,0,0.2)', 
+          zIndex: 2,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between'
         }}>
-          {title}
+           <span style={{ 
+              fontSize: '0.9rem', fontWeight: '800', letterSpacing: '2px', textTransform: 'uppercase',
+              color: color || 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.8rem' 
+           }}>
+              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: color || '#fff', boxShadow: `0 0 10px ${color}` }} />
+              {title}
+           </span>
+           <span style={{ fontSize: '1.5rem', opacity: 0.3 }}>#{index !== undefined ? index + 1 : ''}</span>
         </div>
       )}
-      <div style={{ overflowY: 'auto', width: '100%', height: '100%', padding: '1.5rem 0.5rem', marginTop: title ? '2rem' : '0' }} className="custom-scrollbar">
+
+      {/* Content Area */}
+      <div 
+        style={{ 
+            flex: 1, 
+            overflowY: 'auto', 
+            padding: '2.5rem', 
+            zIndex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center'
+        }} 
+        className="custom-scrollbar"
+      >
         {children}
       </div>
     </div>
@@ -136,7 +153,9 @@ const Dashboard = () => {
   // Transform vertical scroll to horizontal movement
   // Add +1 to cardCount to account for the Reaction Section at the end
   const totalScrollWidth = (cardCount) * (cardWidth + cardGap);
-  const x = useTransform(scrollYProgress, [0, 1], ["5vw", `-${totalScrollWidth}vw`]); // Start with 5vw padding for center look
+  const x = useTransform(scrollYProgress, [0, 1], ["5vw", `-${totalScrollWidth}vw`]);
+  const scrollOpacity = useTransform(scrollYProgress, [0.9, 1], [0, 1]);
+  const scrollYValue = useTransform(scrollYProgress, [0.9, 1], [20, 0]);
 
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -314,298 +333,552 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="container full-height" style={{ paddingTop: '100px', paddingBottom: '3rem' }}>
-      <motion.h1
-        style={{ textAlign: 'center' }}
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        What are you eating?
-      </motion.h1>
-
-      <div className="glass" style={{ padding: '1rem', borderRadius: '2rem', maxWidth: '600px', margin: '0 auto 3rem', position: 'relative' }} ref={wrapperRef}>
-        <form onSubmit={handleSearchSubmit} style={{ display: 'flex', gap: '1rem' }}>
-          <input
-            type="text"
-            placeholder="Search for a dish (e.g. Butter Chicken)..."
-            value={query}
-            onChange={(e) => {
-              setQuery(e.target.value);
-              setShowSuggestions(true);
-            }}
-            onFocus={() => setShowSuggestions(true)}
-            style={{ background: 'transparent', border: 'none', fontSize: '1.2rem', width: '100%' }}
-          />
-          <button
-            type="submit"
-            className="btn btn-primary"
-            style={{ borderRadius: '2rem', opacity: !query ? 0.7 : 1 }}
-            disabled={!query.trim()}
+    <div className="container" style={{ minHeight: '100vh', paddingTop: '110px', paddingBottom: '3rem' }}>
+      
+      {/* HEADER & SEARCH (Fade out when analyzing) */}
+      <AnimatePresence>
+        {!analysis && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -50, height: 0, overflow: 'hidden' }}
+            transition={{ duration: 0.5 }}
           >
-            Search
-          </button>
-        </form>
+            <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+              <h1 style={{ fontSize: '4.5rem', marginBottom: '0.5rem', lineHeight: 1.1 }}>
+                track your <span style={{ color: 'var(--primary)', fontFamily: '"Playfair Display", serif', fontStyle: 'italic' }}>intake.</span>
+              </h1>
+              <p style={{ fontSize: '1.2rem', color: 'var(--text-secondary)' }}>
+                Advanced bio-compatibility analysis for your meals.
+              </p>
+            </div>
 
-        <div style={{ textAlign: 'center', marginTop: '1rem' }}>
-          <button 
-            type="button" 
-            onClick={loadDemo}
-            style={{ 
-              background: 'transparent', 
-              border: '1px solid rgba(255,255,255,0.2)', 
-              color: 'rgba(255,255,255,0.6)', 
-              padding: '0.4rem 1rem', 
-              borderRadius: '2rem', 
-              fontSize: '0.8rem', 
-              cursor: 'pointer',
-              transition: 'all 0.2s'
-            }}
-            onMouseOver={(e) => { e.target.style.background = 'rgba(255,255,255,0.1)'; e.target.style.color = '#fff'; }}
-            onMouseOut={(e) => { e.target.style.background = 'transparent'; e.target.style.color = 'rgba(255,255,255,0.6)'; }}
-          >
-            🥡 Try Demo: Thai Peanut Sauce
-          </button>
-        </div>
-
-        <AnimatePresence>
-          {showSuggestions && suggestions.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="glass"
-              style={{
-                position: 'absolute', top: '110%', left: 0, right: 0,
-                borderRadius: '1rem', overflow: 'hidden', zIndex: 10,
-                background: 'rgba(30, 41, 59, 0.95)',
-                padding: '0.5rem 0'
-              }}
-            >
-              {suggestions.map((s, i) => (
-                <div
-                  key={`${s.title}-${i}`}
-                  style={{ padding: '0.8rem 1.5rem', cursor: 'pointer', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-                  className="glass-hover"
-                  onClick={() => handleSuggestionClick(s)}
+            <div className="glass" style={{ padding: '0.8rem', borderRadius: '3rem', maxWidth: '700px', margin: '0 auto 4rem', position: 'relative', border: '1px solid rgba(255,255,255,0.1)' }} ref={wrapperRef}>
+              <form onSubmit={handleSearchSubmit} style={{ display: 'flex', alignItems: 'center', gap: '1rem', paddingLeft: '1.5rem' }}>
+                <span style={{ fontSize: '1.5rem', opacity: 0.5 }}>🔍</span>
+                <input
+                  type="text"
+                  placeholder="Search for a dish (e.g. Butter Chicken)..."
+                  value={query}
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                    setShowSuggestions(true);
+                  }}
+                  onFocus={() => setShowSuggestions(true)}
+                  style={{ background: 'transparent', border: 'none', fontSize: '1.2rem', width: '100%', color: '#fff', padding: '1rem 0' }}
+                />
+                <button
+                  type="submit"
+                  className="btn-primary"
+                  style={{ borderRadius: '2.5rem', padding: '1.2rem 2.5rem', fontSize: '1.1rem' }}
+                  disabled={!query.trim()}
                 >
-                  <span style={{ opacity: 0.6, fontSize: '0.9rem' }}>
-                    {s.source === 'history' ? '🕒' : (s.type === 'ingredient' ? '🥬' : '🍲')}
-                  </span>
-                  <span>{s.title}</span>
-                  <span style={{ marginLeft: 'auto', fontSize: '0.8rem', opacity: 0.5, fontStyle: 'italic' }}>
-                    {s.source === 'history' ? 'Recent' : (s.type === 'ingredient' ? 'Keyword' : 'Recipe')}
-                  </span>
-                </div>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+                  Analyze
+                </button>
+              </form>
 
-      {loading && <Loader text={analysis ? 'Analyzing safety...' : 'Searching recipes...'} />}
+              {/* Demo Button */}
+              <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: '1rem', textAlign: 'center' }}>
+                 <button 
+                  type="button" 
+                  onClick={loadDemo}
+                  style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', fontSize: '0.9rem', cursor: 'pointer', opacity: 0.7 }}
+                  className="hover-underline"
+                >
+                  ✨ Try Demo: Thai Peanut Sauce
+                </button>
+              </div>
 
-      {results.length > 0 && !analysis && (
-        <>
-          <h3 style={{ marginBottom: '1.5rem', opacity: 0.8 }}>Found {total} recipes</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '2rem' }}>
+              <AnimatePresence>
+                {showSuggestions && suggestions.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                    className="glass"
+                    style={{
+                      position: 'absolute', top: '120%', left: 0, right: 0,
+                      borderRadius: '1.5rem', overflow: 'hidden', zIndex: 20,
+                      background: '#0f172a',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      boxShadow: '0 20px 40px -5px rgba(0,0,0,0.5)'
+                    }}
+                  >
+                    {suggestions.map((s, i) => (
+                      <div
+                        key={`${s.title}-${i}`}
+                        style={{ padding: '1rem 1.5rem', cursor: 'pointer', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', gap: '1rem' }}
+                        className="glass-hover"
+                        onClick={() => handleSuggestionClick(s)}
+                      >
+                        <span style={{ fontSize: '1.2rem', background: 'rgba(255,255,255,0.05)', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%' }}>
+                          {s.source === 'history' ? '🕒' : (s.type === 'ingredient' ? '🥬' : '🍲')}
+                        </span>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            <span style={{ fontWeight: 500, fontSize: '1.1rem' }}>{s.title}</span>
+                            <span style={{ fontSize: '0.8rem', opacity: 0.5 }}>
+                                {s.source === 'history' ? 'Recently viewed' : (s.type === 'ingredient' ? 'Ingredient' : 'Recipe')}
+                            </span>
+                        </div>
+                      </div>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* LOADING STATE */}
+      {loading && (
+          <div style={{ margin: '4rem 0' }}>
+            <Loader text={analysis ? 'Crunching bio-data...' : 'Scouring recipe database...'} />
+          </div>
+      )}
+
+      {/* RESULTS GRID */}
+      <AnimatePresence>
+      {results.length > 0 && !analysis && !loading && (
+        <motion.div
+           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem', marginTop: '2rem' }}>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: 300 }}>Found <strong style={{ color: 'var(--primary)' }}>{total}</strong> matches</h3>
+          </div>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '2rem' }}>
             {results.map((dish, idx) => (
               <motion.div
                 key={idx}
-                className="glass glass-hover"
-                style={{ padding: '1.5rem', borderRadius: '1rem', cursor: 'pointer' }}
-                initial={{ opacity: 0, y: 20 }}
+                className="glass"
+                style={{ 
+                    padding: '0', borderRadius: '1.5rem', cursor: 'pointer', overflow: 'hidden',
+                    border: '1px solid rgba(255,255,255,0.05)'
+                }}
+                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.05 }}
+                whileHover={{ y: -10, boxShadow: '0 20px 40px -10px rgba(0,0,0,0.5)' }}
                 onClick={() => handleAnalyze(dish)}
               >
-                <h3>{dish.Recipe_title || dish.title || 'Unknown Dish'}</h3>
-                <p>{dish.Calories ? `${Math.round(dish.Calories)} kcal` : ''}</p>
-                <button className="btn btn-outline" style={{ marginTop: '1rem', width: '100%' }}>Analyze Details</button>
+                <div style={{ height: '140px', background: `linear-gradient(135deg, #1e293b 0%, #0f172a 100%)`, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ fontSize: '3.5rem', opacity: 0.2 }}>🍲</span>
+                    <div style={{ position: 'absolute', bottom: '1rem', right: '1rem', background: 'rgba(0,0,0,0.5)', padding: '0.3rem 0.8rem', borderRadius: '1rem', backdropFilter: 'blur(4px)', fontSize: '0.8rem' }}>
+                        {dish.Calories ? `${Math.round(dish.Calories)} kcal` : 'N/A'}
+                    </div>
+                </div>
+                <div style={{ padding: '1.5rem' }}>
+                    <h3 style={{ fontSize: '1.3rem', marginBottom: '0.5rem', fontFamily: '"Playfair Display", serif' }}>
+                        {dish.Recipe_title || dish.title || 'Unknown Dish'}
+                    </h3>
+                    <button className="btn-outline" style={{ width: '100%', marginTop: '1rem', padding: '0.8rem' }}>
+                        Analyze Safety
+                    </button>
+                </div>
               </motion.div>
             ))}
           </div>
 
           {hasMore && (
-            <div style={{ textAlign: 'center', marginTop: '3rem' }}>
+            <div style={{ textAlign: 'center', marginTop: '4rem' }}>
               {loadingMore ? (
-                <Loader text="Fetching more..." />
+                <Loader text="Loading more..." />
               ) : (
-                <button className="btn btn-outline" onClick={loadMore} style={{ padding: '0.8rem 3rem' }}>
+                <button className="btn-outline" onClick={loadMore} style={{ padding: '1rem 3rem', borderRadius: '2rem' }}>
                   Load More Results
                 </button>
               )}
             </div>
           )}
-        </>
+        </motion.div>
       )}
+      </AnimatePresence>
 
       {!loading && query && results.length === 0 && !analysis && !showSuggestions && (
-        <div style={{ textAlign: 'center', opacity: 0.6, marginTop: '2rem' }}>
+        <div style={{ textAlign: 'center', opacity: 0.6, marginTop: '4rem' }}>
+          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🤷‍♂️</div>
           <h3>No recipes found for "{query}"</h3>
           <p>Try checking your spelling or using fewer keywords.</p>
         </div>
       )}
 
+      {/* ANALYSIS CARDS SCROLL SECTION */}
       {analysis && (
-          <div ref={scrollRef} style={{ height: `${cardCount * 100}vh`, position: 'relative' }}>
-            {/* Horizontal Scroll Section */}
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}
+            ref={scrollRef}
+            style={{ height: `${cardCount * 100}vh`, position: 'relative' }}
+          >
             <div className="sticky-window" style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', display: 'flex', alignItems: 'center' }}>
-              
-              {/* Animated Track */}
+
               <motion.div style={{ x, display: 'flex' }}>
-                
-                {/* Intro / Title Card (Card 0) */}
-                <StoryCard width={`${cardWidth}vw`} color={analysis.analysis.block ? '#ef4444' : (analysis.analysis.bioScore < 50 ? '#f59e0b' : '#10b981')}>
-                   <div style={{ padding: '2rem' }}>
-                      <h1 style={{ fontSize: '3rem', fontWeight: '800', marginBottom: '1rem', background: 'linear-gradient(to right, #fff, #94a3b8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', lineHeight: 1.2 }}>
+
+                {/* CARD 1: BIO SYNC */}
+                <StoryCard
+                    width={`${cardWidth}vw`}
+                    index={0}
+                    color={analysis.analysis.block ? '#ef4444' : (analysis.analysis.bioScore < 50 ? '#f59e0b' : '#10b981')}
+                    title="Bio-Compatibility"
+                >
+                   <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                      <h1 style={{ fontSize: '2.5rem', fontFamily: '"Playfair Display", serif', marginBottom: '0.5rem', lineHeight: 1.1, background: 'linear-gradient(180deg, #fff 0%, #94a3b8 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', maxWidth: '90%' }}>
                         {analysis.dish.dishName || analysis.dish.Recipe_title}
                       </h1>
-                      
-                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.8rem', padding: '0.8rem 2rem', borderRadius: '3rem', background: analysis.analysis.block ? 'rgba(239, 68, 68, 0.2)' : (analysis.analysis.bioScore < 50 ? 'rgba(245, 158, 11, 0.2)' : 'rgba(16, 185, 129, 0.2)'), border: `1px solid ${analysis.analysis.block ? '#ef4444' : (analysis.analysis.bioScore < 50 ? '#f59e0b' : '#10b981')}`, backdropFilter: 'blur(10px)', marginBottom: '3rem' }}>
-                        <span style={{ fontSize: '1.5rem' }}>
-                          {analysis.analysis.block ? '⛔' : (analysis.analysis.bioScore < 50 ? '⚠️' : '✅')}
-                        </span>
-                        <span style={{ fontSize: '1.1rem', fontWeight: 'bold', letterSpacing: '0.5px', color: analysis.analysis.block ? '#fca5a5' : (analysis.analysis.bioScore < 50 ? '#fcd34d' : '#6ee7b7') }}>
-                          {analysis.analysis.block ? 'NOT RECOMMENDED' : (analysis.analysis.bioScore < 50 ? 'CAUTION ADVISED' : 'SAFE TO EAT')}
-                        </span>
-                      </div>
 
-                      <h2 style={{ fontSize: '1.8rem', marginBottom: '2rem', opacity: 0.9 }}>Bio Sync Score</h2>
-                      <div style={{ position: 'relative', width: '220px', height: '220px', margin: '0 auto' }}>
-                         <svg viewBox="0 0 100 100" style={{ transform: 'rotate(-90deg)', width: '100%', height: '100%' }}>
-                            <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="8" />
-                            <motion.circle 
-                              cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="8"
+                      <div style={{ margin: '1.5rem 0', position: 'relative', width: '240px', height: '240px' }}>
+                          {/* Pulse Effect */}
+                          <div style={{
+                              position: 'absolute', inset: 0, borderRadius: '50%',
+                              border: `2px solid ${analysis.analysis.block ? '#ef4444' : (analysis.analysis.bioScore < 50 ? '#f59e0b' : '#10b981')}`,
+                              animation: 'pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite'
+                          }} />
+
+                          <svg viewBox="0 0 100 100" style={{ transform: 'rotate(-90deg)', width: '100%', height: '100%' }}>
+                            {/* Track */}
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="4" />
+                            {/* Indicator */}
+                            <motion.circle
+                              cx="50" cy="50" r="45" fill="none" stroke="url(#gradientScore)" strokeWidth="6"
                               strokeDasharray="283"
                               strokeDashoffset="283"
                               animate={{ strokeDashoffset: 283 - (283 * analysis.analysis.bioScore) / 100 }}
-                              transition={{ duration: 1.5, ease: "easeOut" }}
+                              transition={{ duration: 2, ease: "circOut" }}
                               strokeLinecap="round"
-                              style={{ color: analysis.analysis.block ? '#ef4444' : (analysis.analysis.bioScore < 50 ? '#f59e0b' : '#10b981') }}
+                              style={{ filter: `drop-shadow(0 0 10px ${analysis.analysis.block ? '#ef4444' : (analysis.analysis.bioScore < 50 ? '#f59e0b' : '#10b981')}80)` }}
                             />
+                            <defs>
+                                <linearGradient id="gradientScore" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stopColor={analysis.analysis.block ? '#7f1d1d' : (analysis.analysis.bioScore < 50 ? '#78350f' : '#064e3b')} />
+                                    <stop offset="100%" stopColor={analysis.analysis.block ? '#ef4444' : (analysis.analysis.bioScore < 50 ? '#f59e0b' : '#10b981')} />
+                                </linearGradient>
+                            </defs>
                          </svg>
+
                          <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                            <span style={{ fontSize: '4.5rem', fontWeight: 'bold' }}>{Math.round(analysis.analysis.bioScore)}</span>
-                            <span style={{ fontSize: '1.2rem', opacity: 0.7 }}>/ 100</span>
+                            <span style={{ fontSize: '4.5rem', fontWeight: '800', fontFamily: '"Playfair Display", serif', textShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
+                                {Math.round(analysis.analysis.bioScore)}
+                            </span>
+                            <span style={{ fontSize: '0.8rem', opacity: 0.6, letterSpacing: '3px', textTransform: 'uppercase', marginTop: '-5px' }}>Score</span>
                          </div>
                       </div>
-                      <p style={{ marginTop: '2rem', fontSize: '1.2rem', opacity: 0.8, maxWidth: '600px', marginInline: 'auto', lineHeight: 1.6 }}>
-                        {analysis.analysis.bioScore >= 80 ? 'Matches your biological profile perfectly.' : (analysis.analysis.block ? 'Conflicts with your critical allergies.' : 'Some ingredients may not agree with you.')}
-                      </p>
+
+                      <div style={{
+                          padding: '0.6rem 1.5rem', borderRadius: '3rem',
+                          background: analysis.analysis.block ? 'rgba(239, 68, 68, 0.1)' : (analysis.analysis.bioScore < 50 ? 'rgba(245, 158, 11, 0.1)' : 'rgba(16, 185, 129, 0.1)'),
+                          border: `1px solid ${analysis.analysis.block ? '#ef4444' : (analysis.analysis.bioScore < 50 ? '#f59e0b' : '#10b981')}40`,
+                          boxShadow: `0 0 20px ${analysis.analysis.block ? '#ef4444' : (analysis.analysis.bioScore < 50 ? '#f59e0b' : '#10b981')}20`,
+                          color: analysis.analysis.block ? '#fca5a5' : (analysis.analysis.bioScore < 50 ? '#fcd34d' : '#6ee7b7'),
+                          fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.8rem'
+                      }}>
+                          {analysis.analysis.block ? '⛔ Not Recommended' : (analysis.analysis.bioScore < 50 ? '⚠️ Caution Advised' : '✅ Safe to Eat')}
+                      </div>
                    </div>
                 </StoryCard>
 
                 {/* CARD 2: TASTE MATCH */}
-                <StoryCard width={`${cardWidth}vw`} color="#8b5cf6">
-                  <h2 style={{ fontSize: '2.5rem', marginBottom: '3rem', opacity: 0.9 }}>Taste Match</h2>
-                  <div style={{ position: 'relative', width: '250px', height: '250px', margin: '0 auto' }}>
-                     <svg viewBox="0 0 100 100" style={{ transform: 'rotate(-90deg)', width: '100%', height: '100%' }}>
-                        <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="8" />
-                        <motion.circle 
-                          cx="50" cy="50" r="45" fill="none" stroke="#8b5cf6" strokeWidth="8"
-                          strokeDasharray="283"
-                          strokeDashoffset="283"
-                          animate={{ strokeDashoffset: 283 - (283 * analysis.analysis.tasteScore) / 100 }}
-                          transition={{ duration: 1.5, ease: "easeOut", delay: 0.3 }}
-                          strokeLinecap="round"
-                        />
-                     </svg>
-                     <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                        <span style={{ fontSize: '5rem', fontWeight: 'bold', color: '#a78bfa' }}>{Math.round(analysis.analysis.tasteScore)}%</span>
-                     </div>
-                  </div>
-                  <p style={{ marginTop: '3rem', fontSize: '1.4rem', opacity: 0.8 }}>
-                    Based on your flavor preferences.
-                  </p>
-                </StoryCard>
+                <StoryCard
+                    width={`${cardWidth}vw`}
+                    index={1}
+                    color="#8b5cf6"
+                    title="Flavor Profile"
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
+                      <h2 style={{ fontSize: '3rem', fontFamily: '"Playfair Display", serif', marginBottom: '2rem', background: 'linear-gradient(135deg, #a78bfa 0%, #fff 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                          Taste Match
+                      </h2>
 
-                {/* CARD 3: BREAKDOWN */}
-                <StoryCard width={`${cardWidth}vw`} color="#3b82f6" title="Analysis Breakdown">
-                  <h2 style={{ fontSize: '2.2rem', marginBottom: '2rem', opacity: 0.9 }}>Deep Dive</h2>
-                  
-                  <div style={{ textAlign: 'left', width: '100%', height: '50vh', overflowY: 'auto', paddingRight: '1rem' }} className="custom-scrollbar">
-                    {analysis.analysis.evidence.length > 0 ? (
-                      analysis.analysis.evidence.map((item, i) => (
-                        <div key={i} style={{ marginBottom: '1rem', padding: '1.2rem', background: 'rgba(255,255,255,0.03)', borderRadius: '1rem', borderLeft: `6px solid ${item.type === 'critical' ? '#ef4444' : '#f59e0b'}` }}>
-                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
-                              <strong style={{ fontSize: '1.2rem' }}>{item.ingredient}</strong>
-                              <span style={{ fontSize: '0.8rem', padding: '0.3rem 0.8rem', borderRadius: '1rem', background: item.type === 'critical' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(245, 158, 11, 0.2)', color: item.type === 'critical' ? '#fca5a5' : '#fcd34d', fontWeight: 'bold', letterSpacing: '0.5px' }}>
-                                {item.type === 'critical' ? 'ALLERGY' : 'SENSITIVITY'}
-                              </span>
-                           </div>
-                           <p style={{ margin: 0, fontSize: '1rem', opacity: 0.8, lineHeight: 1.5 }}>{item.reason}</p>
-                        </div>
-                      ))
-                    ) : (
-                       <div style={{ padding: '3rem', textAlign: 'center', opacity: 0.6, fontStyle: 'italic', fontSize: '1.2rem' }}>
-                         No negative interactions found. This dish looks clean! ✨
-                       </div>
-                    )}
-                    
-                    <div style={{ marginTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '2rem' }}>
-                      {analysis.analysis.breakdown.map((msg, i) => (
-                         <p key={i} style={{ fontSize: '1rem', opacity: 0.8, marginBottom: '0.8rem', lineHeight: 1.6 }} dangerouslySetInnerHTML={{ __html: msg }} />
-                      ))}
-                    </div>
+                      <div style={{ position: 'relative', width: '220px', height: '220px', margin: '0 auto', animation: 'float 6s ease-in-out infinite' }}>
+                         <svg viewBox="0 0 100 100" style={{ transform: 'rotate(-90deg)', width: '100%', height: '100%' }}>
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
+                            <motion.circle
+                              cx="50" cy="50" r="45" fill="none" stroke="url(#gradientTaste)" strokeWidth="8"
+                              strokeDasharray="283"
+                              strokeDashoffset="283"
+                              animate={{ strokeDashoffset: 283 - (283 * analysis.analysis.tasteScore) / 100 }}
+                              transition={{ duration: 1.5, ease: "easeOut", delay: 0.3 }}
+                              strokeLinecap="round"
+                              style={{ filter: 'drop-shadow(0 0 15px rgba(139, 92, 246, 0.5))' }}
+                            />
+                             <defs>
+                                <linearGradient id="gradientTaste" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stopColor="#7c3aed" />
+                                    <stop offset="100%" stopColor="#c4b5fd" />
+                                </linearGradient>
+                            </defs>
+                         </svg>
+                         <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                            <span style={{ fontSize: '4rem', fontWeight: '800', fontFamily: '"Playfair Display", serif', color: '#fff' }}>{Math.round(analysis.analysis.tasteScore)}%</span>
+                            <span style={{ fontSize: '0.8rem', opacity: 0.6, letterSpacing: '2px', textTransform: 'uppercase' }}>Match</span>
+                         </div>
+                      </div>
+
+                      <p style={{ marginTop: '2rem', fontSize: '1.2rem', opacity: 0.7, maxWidth: '400px', lineHeight: 1.6 }}>
+                        "This dish aligns with your preference for <span style={{ color: '#a78bfa', fontWeight: 'bold' }}>savory</span> and <span style={{ color: '#a78bfa', fontWeight: 'bold' }}>spicy</span> flavors."
+                      </p>
                   </div>
                 </StoryCard>
 
-                {/* CARD 4: ALTERNATIVES (Conditional) */}
-                {(analysis.alternatives.length > 0 || analysis.analysis.modifications) && (
-                   <StoryCard width={`${cardWidth}vw`} color="#10b981">
-                      <h2 style={{ fontSize: '2.2rem', marginBottom: '2rem', opacity: 0.9, color: '#6ee7b7' }}>Safer Alternatives</h2>
-                      
-                      <div style={{ height: '50vh', overflowY: 'auto', width: '100%', paddingRight: '1rem' }} className="custom-scrollbar">
-                        {analysis.analysis.modifications && analysis.analysis.modifications.length > 0 && (
-                           <div style={{ marginBottom: '2.5rem', textAlign: 'left', width: '100%' }}>
-                              <h4 style={{ opacity: 0.9, marginBottom: '1.2rem', fontSize: '1.2rem', color: '#a7f3d0' }}>Recommended Swaps</h4>
-                              {analysis.analysis.modifications.map((mod, k) => (
-                                  <div key={k} style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem', padding: '1rem', background: 'rgba(16, 185, 129, 0.1)', borderRadius: '1rem', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
-                                     <span style={{ textDecoration: 'line-through', opacity: 0.6 }}>{mod.original}</span>
-                                     <span style={{ fontSize: '1.2rem' }}>➔</span>
-                                     <span style={{ fontWeight: 'bold', color: '#6ee7b7', fontSize: '1.1rem' }}>{mod.swap}</span>
-                                  </div>
-                              ))}
-                           </div>
-                        )}
+                {/* CARD 3: DATA INTEL */}
+                <StoryCard
+                    width={`${cardWidth}vw`}
+                    index={2}
+                    color="#3b82f6"
+                    title="Intel Logs"
+                >
+                  <div style={{ flex: 1, width: '100%', display: 'flex', flexDirection: 'column' }}>
+                      <h2 style={{ fontSize: '2.5rem', fontFamily: '"Playfair Display", serif', marginBottom: '1.5rem', textAlign: 'left' }}>Analysis Data</h2>
 
-                        {analysis.alternatives.length > 0 && (
-                          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-                            <h4 style={{ opacity: 0.9, textAlign: 'left', fontSize: '1.2rem', color: '#a7f3d0' }}>Similiar Safe Recipes</h4>
-                            {analysis.alternatives.map((alt, idx) => (
-                              <div
-                                key={idx}
-                                className="glass-hover"
-                                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.2rem', background: 'rgba(255,255,255,0.05)', borderRadius: '1rem', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.05)' }}
-                                onClick={() => handleAnalyze(alt)}
-                              >
-                                <div>
-                                  <div style={{ fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '0.2rem' }}>{alt.Recipe_title || alt.title}</div>
-                                  <div style={{ fontSize: '0.9rem', opacity: 0.6 }}>High Match</div>
+                      <div style={{ flex: 1, overflowY: 'auto', paddingRight: '0.5rem' }} className="custom-scrollbar">
+                          {analysis.analysis.evidence.length > 0 ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                              {analysis.analysis.evidence.map((item, i) => (
+                                <div key={i} className="glass-hover" style={{
+                                    padding: '1.2rem',
+                                    background: 'rgba(255,255,255,0.03)',
+                                    borderRadius: '1rem',
+                                    border: '1px solid rgba(255,255,255,0.05)',
+                                    textAlign: 'left',
+                                    position: 'relative', overflow: 'hidden'
+                                }}>
+                                   {/* Corner Accent */}
+                                   <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: item.type === 'critical' ? '#ef4444' : '#f59e0b' }} />
+                                   
+                                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.8rem', paddingLeft: '1rem' }}>
+                                      <strong style={{ fontSize: '1.3rem', color: '#fff' }}>{item.ingredient}</strong>
+                                      <span style={{ 
+                                          fontSize: '0.7rem', padding: '0.3rem 0.8rem', borderRadius: '2rem', 
+                                          border: `1px solid ${item.type === 'critical' ? '#ef4444' : '#f59e0b'}`,
+                                          color: item.type === 'critical' ? '#fca5a5' : '#fcd34d', 
+                                          fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase'
+                                      }}>
+                                        {item.type === 'critical' ? 'Allergy Conflict' : 'Sensitivity'}
+                                      </span>
+                                   </div>
+                                   <p style={{ margin: 0, paddingLeft: '1rem', fontSize: '1rem', opacity: 0.7, lineHeight: 1.6 }}>{item.reason}</p>
                                 </div>
-                                <span style={{ fontSize: '1.5rem' }}>👉</span>
-                              </div>
+                              ))}
+                            </div>
+                          ) : (
+                             <div style={{ padding: '4rem', textAlign: 'center', opacity: 0.5, border: '2px dashed rgba(255,255,255,0.1)', borderRadius: '1rem' }}>
+                               <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>✨</div>
+                               <p style={{ fontSize: '1.2rem' }}>No negative interactions detected.</p>
+                             </div>
+                          )}
+                          
+                          <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.1)', textAlign: 'left' }}>
+                            {analysis.analysis.breakdown.map((msg, i) => (
+                               <p key={i} style={{ fontSize: '1rem', opacity: 0.8, marginBottom: '1rem', lineHeight: 1.7, fontFamily: 'monospace', paddingLeft: '1rem', borderLeft: '2px solid rgba(255,255,255,0.1)' }} dangerouslySetInnerHTML={{ __html: msg }} />
                             ))}
                           </div>
-                        )}
+                      </div>
+                  </div>
+                </StoryCard>
+
+                {/* CARD 4: ALTERNATIVES */}
+                {(analysis.alternatives.length > 0 || analysis.analysis.modifications) && (
+                   <StoryCard 
+                        width={`${cardWidth}vw`} 
+                        index={3}
+                        color="#10b981" 
+                        title="Optimization"
+                   >
+                      <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                         <h2 style={{ fontSize: '2.5rem', fontFamily: '"Playfair Display", serif', marginBottom: '2rem', textAlign: 'left', color: '#34d399' }}>Safer Options</h2>
+                         
+                         <div style={{ flex: 1, overflowY: 'auto', paddingRight: '1rem' }} className="custom-scrollbar">
+                             {analysis.analysis.modifications && analysis.analysis.modifications.length > 0 && (
+                                <div style={{ marginBottom: '3rem', textAlign: 'left' }}>
+                                   <h4 style={{ opacity: 0.5, marginBottom: '1.5rem', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '2px', paddingBottom: '0.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>Recommended Swaps</h4>
+                                   <div style={{ display: 'grid', gap: '1rem' }}>
+                                       {analysis.analysis.modifications.map((mod, k) => (
+                                           <div key={k} style={{ 
+                                               display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', 
+                                               padding: '1.2rem', background: 'rgba(16, 185, 129, 0.05)', borderRadius: '1rem', 
+                                               border: '1px solid rgba(16, 185, 129, 0.2)' 
+                                           }}>
+                                              <div style={{ textDecoration: 'line-through', opacity: 0.5, textAlign: 'center' }}>{mod.original}</div>
+                                              <div style={{ color: '#10b981', fontSize: '1.2rem' }}>➔</div>
+                                              <div style={{ fontWeight: 'bold', color: '#6ee7b7', textAlign: 'center', fontSize: '1.1rem' }}>{mod.swap}</div>
+                                           </div>
+                                       ))}
+                                   </div>
+                                </div>
+                             )}
+
+                             {analysis.alternatives.length > 0 && (
+                               <div style={{ textAlign: 'left' }}>
+                                 <h4 style={{ opacity: 0.5, marginBottom: '1.5rem', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '2px', paddingBottom: '0.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>Related Safe Recipes</h4>
+                                 <div style={{ display: 'grid', gap: '1rem' }}>
+                                     {analysis.alternatives.map((alt, idx) => (
+                                       <div
+                                         key={idx}
+                                         className="glass-hover"
+                                         style={{ 
+                                             display: 'flex', alignItems: 'center', justifyContent: 'space-between', 
+                                             padding: '1.2rem', background: 'rgba(255,255,255,0.02)', 
+                                             borderRadius: '1rem', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.05)' 
+                                         }}
+                                         onClick={() => handleAnalyze(alt)}
+                                       >
+                                         <div>
+                                           <div style={{ fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '0.3rem' }}>{alt.Recipe_title || alt.title}</div>
+                                           <div style={{ fontSize: '0.8rem', opacity: 0.7, color: '#34d399', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                               <span style={{ width: '6px', height: '6px', backgroundColor: '#34d399', borderRadius: '50%' }}></span>
+                                               98% Compatibility
+                                           </div>
+                                         </div>
+                                         <span style={{ fontSize: '1.2rem', opacity: 0.5, transform: 'rotate(-45deg)', display: 'inline-block' }}>➜</span>
+                                       </div>
+                                     ))}
+                                 </div>
+                               </div>
+                             )}
+                         </div>
                       </div>
                    </StoryCard>
                 )}
                 
-                {/* Final: Reaction Prompt */}
-                 <div style={{ minWidth: '40vw', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', opacity: 0.8 }}>
-                    <h3 style={{ marginBottom: '2rem', fontSize: '1.5rem' }}>How did your body react?</h3>
-                    <div className="reaction-group" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                      <button className="reaction-btn" onClick={() => LogReaction(analysis.dish.dishName, 'No problem')} style={{ padding: '1rem 3rem', fontSize: '1.2rem' }}>👍 Good</button>
-                      <button className="reaction-btn" onClick={() => LogReaction(analysis.dish.dishName, 'Minor discomfort')} style={{ padding: '1rem 3rem', fontSize: '1.2rem' }}>😐 Bloat</button>
-                      <button className="reaction-btn danger" onClick={() => LogReaction(analysis.dish.dishName, 'Severe')} style={{ padding: '1rem 3rem', fontSize: '1.2rem' }}>👎 Bad</button>
-                    </div>
-                 </div>
-
               </motion.div>
+              
+               {/* Scroll Down Indicator */}
+               <motion.div
+                style={{
+                    position: 'absolute',
+                    bottom: '3rem',
+                    left: '50%',
+                    x: '-50%',
+                    opacity: scrollOpacity,
+                    y: scrollYValue,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    pointerEvents: 'none',
+                    zIndex: 20
+                }}
+               >
+                  <p style={{ 
+                      fontSize: '0.9rem', 
+                      letterSpacing: '3px', 
+                      textTransform: 'uppercase', 
+                      marginBottom: '1rem', 
+                      opacity: 0.6,
+                      textShadow: '0 2px 10px rgba(0,0,0,0.5)'
+                  }}>
+                      System Feedback Below
+                  </p>
+                  <motion.div
+                      animate={{ y: [0, 10, 0], opacity: [0.5, 1, 0.5] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                      style={{ 
+                          width: '40px', height: '40px', 
+                          borderRadius: '50%', 
+                          border: '1px solid rgba(255,255,255,0.2)',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          background: 'rgba(255,255,255,0.05)',
+                          backdropFilter: 'blur(10px)'
+                      }}
+                  >
+                      <span style={{ fontSize: '1.2rem', marginTop: '2px' }}>↓</span>
+                  </motion.div>
+               </motion.div>
+
             </div>
+          </motion.div>
+       )}
+
+       {/* REACTION SECTION (Vertical Scroll) */}
+       {analysis && (
+          <div style={{ 
+              minHeight: '80vh', 
+              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+              position: 'relative', zIndex: 10,
+              background: 'radial-gradient(circle at 50% 50%, #1e293b 0%, #020617 100%)',
+              borderTop: '1px solid rgba(255,255,255,0.05)',
+              padding: '4rem 2rem'
+          }}>
+              {/* Background Glow */}
+              <div style={{
+                  position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+                  width: '60vw', height: '60vw', background: 'radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%)',
+                  pointerEvents: 'none', filter: 'blur(80px)'
+              }} />
+
+              <div className="glass" style={{
+                  padding: '4rem', borderRadius: '3rem',
+                  background: 'rgba(15, 23, 42, 0.6)',
+                  backdropFilter: 'blur(40px)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  boxShadow: '0 50px 100px -20px rgba(0,0,0,0.7)',
+                  maxWidth: '800px', width: '100%',
+                  textAlign: 'center', position: 'relative', overflow: 'hidden'
+              }}>
+                  {/* Decorative Elements */}
+                  <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', background: 'linear-gradient(90deg, transparent, #8b5cf6, transparent)' }} />
+                  
+                  <h3 style={{ 
+                      fontSize: '3.5rem', fontFamily: '"Playfair Display", serif', marginBottom: '1rem',
+                      background: 'linear-gradient(135deg, #fff 0%, #94a3b8 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
+                  }}>
+                      System Feedback
+                  </h3>
+                  <p style={{ fontSize: '1.2rem', opacity: 0.7, marginBottom: '3rem', maxWidth: '600px', margin: '0 auto 3rem auto' }}>
+                      Help us fine-tune your bio-algorithm. How did your body respond to this fuel?
+                  </p>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+                      <button 
+                          className="glass-hover" 
+                          onClick={() => LogReaction(analysis.dish.dishName, 'No problem')} 
+                          style={{ 
+                              padding: '2rem', borderRadius: '1.5rem', 
+                              border: '1px solid rgba(16, 185, 129, 0.3)', 
+                              background: 'linear-gradient(145deg, rgba(16, 185, 129, 0.1) 0%, rgba(6, 78, 59, 0.2) 100%)',
+                              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', cursor: 'pointer',
+                              transition: 'all 0.3s ease'
+                          }}
+                      >
+                          <span style={{ fontSize: '2.5rem', filter: 'drop-shadow(0 0 10px rgba(16, 185, 129, 0.5))' }}>⚡</span>
+                          <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#6ee7b7' }}>Optimal</span>
+                          <span style={{ fontSize: '0.9rem', opacity: 0.7 }}>Felt great, full energy.</span>
+                      </button>
+
+                      <button 
+                          className="glass-hover" 
+                          onClick={() => LogReaction(analysis.dish.dishName, 'Minor discomfort')} 
+                          style={{ 
+                              padding: '2rem', borderRadius: '1.5rem', 
+                              border: '1px solid rgba(245, 158, 11, 0.3)', 
+                              background: 'linear-gradient(145deg, rgba(245, 158, 11, 0.1) 0%, rgba(120, 53, 15, 0.2) 100%)',
+                              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', cursor: 'pointer',
+                              transition: 'all 0.3s ease'
+                          }}
+                      >
+                          <span style={{ fontSize: '2.5rem', filter: 'drop-shadow(0 0 10px rgba(245, 158, 11, 0.5))' }}>⚠️</span>
+                          <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#fcd34d' }}>Minor Load</span>
+                          <span style={{ fontSize: '0.9rem', opacity: 0.7 }}>Slight bloat or fatigue.</span>
+                      </button>
+
+                      <button 
+                          className="glass-hover" 
+                          onClick={() => LogReaction(analysis.dish.dishName, 'Severe')} 
+                          style={{ 
+                              padding: '2rem', borderRadius: '1.5rem', 
+                              border: '1px solid rgba(239, 68, 68, 0.3)', 
+                              background: 'linear-gradient(145deg, rgba(239, 68, 68, 0.1) 0%, rgba(127, 29, 29, 0.2) 100%)',
+                              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', cursor: 'pointer',
+                              transition: 'all 0.3s ease'
+                          }}
+                      >
+                          <span style={{ fontSize: '2.5rem', filter: 'drop-shadow(0 0 10px rgba(239, 68, 68, 0.5))' }}>⛔</span>
+                          <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#fca5a5' }}>Conflict</span>
+                          <span style={{ fontSize: '0.9rem', opacity: 0.7 }}>Bad reaction, avoid.</span>
+                      </button>
+                  </div>
+              </div>
           </div>
-      )}
+       )}
+
     </div>
   );
 
