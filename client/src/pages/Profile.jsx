@@ -80,13 +80,18 @@ const Profile = () => {
 
     return (
         <div className="container full-height" style={{ paddingTop: '100px', paddingBottom: '3rem' }}>
-             <motion.div 
+            <motion.div 
                 className="glass" 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                style={{ padding: '2rem', width: '100%', maxWidth: '800px', borderRadius: '1.5rem', margin: '0 auto' }}
+                style={{ 
+                    padding: '2rem', width: '100%', maxWidth: '800px', borderRadius: '1.5rem', margin: '0 auto',
+                    background: 'rgba(255, 255, 255, 0.8)', // Clearer white for profile
+                    border: '1px solid rgba(0,0,0,0.05)',
+                    boxShadow: '0 20px 40px -10px rgba(0,0,0,0.05)'
+                }}
             >
-                <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Your Food Profile</h2>
+                <h2 style={{ textAlign: 'center', marginBottom: '2rem', color: '#1e293b' }}>Your Food Profile</h2>
                 
                 <form onSubmit={handleSubmit}>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '3rem' }}>
@@ -101,8 +106,8 @@ const Profile = () => {
                             {Object.keys(taste).map(flavor => (
                                 <div key={flavor} style={{ marginBottom: '1.2rem' }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                                        <label style={{ textTransform: 'capitalize', fontWeight: 'bold' }}>{flavor}</label>
-                                        <span style={{ color: 'var(--primary)' }}>{taste[flavor]}</span>
+                                        <label style={{ textTransform: 'capitalize', fontWeight: 'bold', color: '#334155' }}>{flavor}</label>
+                                        <span style={{ color: 'var(--primary)', fontWeight: 'bold' }}>{taste[flavor]}</span>
                                     </div>
                                     <input 
                                         type="range" min="1" max="10" 
@@ -128,7 +133,10 @@ const Profile = () => {
                                     placeholder="e.g. Peanuts, Shellfish (Strictly Avoided)" 
                                     value={allergies}
                                     onChange={e => setAllergies(e.target.value)}
-                                    style={{ borderColor: allergies ? 'var(--accent)' : '' }}
+                                    style={{ 
+                                        borderColor: allergies ? 'var(--accent)' : 'rgba(0,0,0,0.1)',
+                                        background: 'white', color: '#1e293b', padding: '0.8rem', borderRadius: '0.5rem', width: '100%', border: '1px solid rgba(0,0,0,0.1)'
+                                    }}
                                 />
                             </div>
 
@@ -139,6 +147,7 @@ const Profile = () => {
                                     placeholder="e.g. Gluten, Lactose (Monitoring)" 
                                     value={intolerances}
                                     onChange={e => setIntolerances(e.target.value)}
+                                    style={{ background: 'white', color: '#1e293b', padding: '0.8rem', borderRadius: '0.5rem', width: '100%', border: '1px solid rgba(0,0,0,0.1)' }}
                                 />
                             </div>
 
@@ -147,7 +156,7 @@ const Profile = () => {
                                 <select 
                                     value={spiceTolerance} 
                                     onChange={e => setSpiceTolerance(e.target.value)}
-                                    style={{ width: '100%', padding: '0.8rem', borderRadius: '0.5rem', background: 'rgba(15, 23, 42, 0.6)', color: 'white', border: '1px solid var(--glass-border)' }}
+                                    style={{ width: '100%', padding: '0.8rem', borderRadius: '0.5rem', background: 'white', color: '#1e293b', border: '1px solid rgba(0,0,0,0.1)' }}
                                 >
                                     <option value="Low">Low (No heat)</option>
                                     <option value="Medium">Medium (Jalapeno)</option>
@@ -162,7 +171,7 @@ const Profile = () => {
                                     onChange={e => setFermentedSensitivity(e.target.checked)}
                                     style={{ width: '20px', height: '20px' }}
                                 />
-                                <label>Sensitive to Fermented Foods / Alcohol?</label>
+                                <label style={{ color: 'black', fontWeight: '500' }}>Sensitive to Fermented Foods / Alcohol?</label>
                             </div>
                         </div>
                     </div>

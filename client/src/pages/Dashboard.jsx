@@ -24,76 +24,55 @@ const normalizeText = (value = '') =>
     .replace(/\s+/g, ' ')
     .trim();
 
-// Reusable Sticky Card Component
-// Reusable Card for Horizontal Scroll
 // Reusable Sticky Card Component (Premium Glass)
-const StoryCard = ({ children, color, title, index, width }) => {
-  return (
-    <div
-      className="glass"
-      style={{
-        minWidth: width || '85vw',
-        width: width || '85vw',
-        height: '75vh',
-        marginRight: '4vw',
-        padding: '0', // Reset padding for internal layout
-        borderRadius: '3rem',
-        background: `linear-gradient(145deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%)`,
-        backdropFilter: 'blur(30px)', 
-        WebkitBackdropFilter: 'blur(30px)',
-        border: `1px solid ${color ? color + '30' : 'rgba(255,255,255,0.08)'}`,
-        boxShadow: `0 30px 60px -15px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.05)`,
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'relative',
-        overflow: 'hidden'
-      }}
-    >
-      {/* Background Glow */}
-      <div style={{
-         position: 'absolute', top: '-30%', right: '-30%', width: '150%', height: '150%',
-         background: `radial-gradient(circle at 80% 20%, ${color || '#64748b'}15, transparent 60%)`,
-         zIndex: 0, pointerEvents: 'none', filter: 'blur(60px)'
-      }} />
-
-      {/* Header / Title Bar */}
-      {title && (
-        <div style={{ 
-          padding: '1.5rem 2.5rem', 
-          borderBottom: `1px solid ${color ? color + '15' : 'rgba(255,255,255,0.05)'}`,
-          background: 'rgba(0,0,0,0.2)', 
-          zIndex: 2,
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between'
+const StoryCard = ({ children, width, index, color, title }) => {
+    return (
+      <motion.div
+        layout
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="glass"
+        style={{
+          minWidth: width || '85vw',
+          width: width || '85vw',
+          height: '70vh',
+          marginRight: '4vw',
+          padding: '0',
+          borderRadius: '2rem',
+          background: 'rgba(255, 255, 255, 0.8)', // Clearer white
+          border: '1px solid rgba(0,0,0,0.05)',
+          boxShadow: '0 20px 40px -10px rgba(0,0,0,0.05)', // Soft shadow
+          display: 'flex',
+          flexDirection: 'column',
+          position: 'relative',
+          overflow: 'hidden'
+        }}
+      >
+        {/* Title Bar - Clean & Minimal */}
+        <div style={{
+          padding: '2rem 2.5rem 1rem',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          borderBottom: '1px solid rgba(0,0,0,0.03)'
         }}>
-           <span style={{ 
-              fontSize: '0.9rem', fontWeight: '800', letterSpacing: '2px', textTransform: 'uppercase',
-              color: color || 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.8rem' 
+           <span style={{
+              fontSize: '0.9rem', fontWeight: '800', letterSpacing: '2px', textTransform: 'uppercase', 
+              color: color || '#64748b', display: 'flex', alignItems: 'center', gap: '0.8rem'
            }}>
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: color || '#fff', boxShadow: `0 0 10px ${color}` }} />
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: color || '#64748b' }} />
               {title}
            </span>
-           <span style={{ fontSize: '1.5rem', opacity: 0.3 }}>#{index !== undefined ? index + 1 : ''}</span>
+           <span style={{ fontSize: '1.2rem', opacity: 0.3, fontFamily: '"Playfair Display", serif', color: '#1e293b', fontStyle: 'italic' }}>
+               {index !== undefined ? String(index + 1).padStart(2, '0') : ''}
+           </span>
         </div>
-      )}
 
-      {/* Content Area */}
-      <div 
-        style={{ 
-            flex: 1, 
-            overflowY: 'auto', 
-            padding: '2.5rem', 
-            zIndex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            textAlign: 'center'
-        }} 
-        className="custom-scrollbar"
-      >
-        {children}
-      </div>
-    </div>
-  );
+        <div style={{ flex: 1, padding: '2rem', position: 'relative', overflow: 'hidden' }}>
+            {children}
+        </div>
+      </motion.div>
+    );
 };
 
 // ... (Dashboard component start) ...
@@ -153,9 +132,15 @@ const Dashboard = () => {
   // Transform vertical scroll to horizontal movement
   // Add +1 to cardCount to account for the Reaction Section at the end
   const totalScrollWidth = (cardCount) * (cardWidth + cardGap);
-  const x = useTransform(scrollYProgress, [0, 1], ["5vw", `-${totalScrollWidth}vw`]);
-  const scrollOpacity = useTransform(scrollYProgress, [0.9, 1], [0, 1]);
-  const scrollYValue = useTransform(scrollYProgress, [0.9, 1], [20, 0]);
+  
+  // PAUSE & REVEAL LOGIC:
+  // 0% -> 85%: Scroll cards horizontally
+  // 85% -> 100%: Pause cards, reveal "Scroll Down" indicator
+  const x = useTransform(scrollYProgress, [0, 0.85, 1], ["5vw", `-${totalScrollWidth}vw`, `-${totalScrollWidth}vw`]);
+  
+  // Indicator fades in during the pause phase
+  const scrollOpacity = useTransform(scrollYProgress, [0.6, 0.9], [0, 1]);
+  const scrollYValue = useTransform(scrollYProgress, [0.6, 0.9], [20, 0]);
 
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -345,15 +330,15 @@ const Dashboard = () => {
             transition={{ duration: 0.5 }}
           >
             <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-              <h1 style={{ fontSize: '4.5rem', marginBottom: '0.5rem', lineHeight: 1.1 }}>
+              <h1 style={{ fontSize: '4.5rem', marginBottom: '0.5rem', lineHeight: 1.1, color: '#1e293b' }}>
                 track your <span style={{ color: 'var(--primary)', fontFamily: '"Playfair Display", serif', fontStyle: 'italic' }}>intake.</span>
               </h1>
-              <p style={{ fontSize: '1.2rem', color: 'var(--text-secondary)' }}>
+              <p style={{ fontSize: '1.2rem', color: '#64748b' }}>
                 Advanced bio-compatibility analysis for your meals.
               </p>
             </div>
 
-            <div className="glass" style={{ padding: '0.8rem', borderRadius: '3rem', maxWidth: '700px', margin: '0 auto 4rem', position: 'relative', border: '1px solid rgba(255,255,255,0.1)' }} ref={wrapperRef}>
+            <div className="glass" style={{ padding: '0.8rem', borderRadius: '3rem', maxWidth: '700px', margin: '0 auto 4rem', position: 'relative', border: '1px solid rgba(0,0,0,0.05)', background: 'white' }} ref={wrapperRef}>
               <form onSubmit={handleSearchSubmit} style={{ display: 'flex', alignItems: 'center', gap: '1rem', paddingLeft: '1.5rem' }}>
                 <span style={{ fontSize: '1.5rem', opacity: 0.5 }}>🔍</span>
                 <input
@@ -365,7 +350,7 @@ const Dashboard = () => {
                     setShowSuggestions(true);
                   }}
                   onFocus={() => setShowSuggestions(true)}
-                  style={{ background: 'transparent', border: 'none', fontSize: '1.2rem', width: '100%', color: '#fff', padding: '1rem 0' }}
+                  style={{ background: 'transparent', border: 'none', fontSize: '1.2rem', width: '100%', color: '#1e293b', padding: '1rem 0' }}
                 />
                 <button
                   type="submit"
@@ -399,19 +384,19 @@ const Dashboard = () => {
                     style={{
                       position: 'absolute', top: '120%', left: 0, right: 0,
                       borderRadius: '1.5rem', overflow: 'hidden', zIndex: 20,
-                      background: '#0f172a',
-                      border: '1px solid rgba(255,255,255,0.1)',
-                      boxShadow: '0 20px 40px -5px rgba(0,0,0,0.5)'
+                      background: 'white',
+                      border: '1px solid rgba(0,0,0,0.05)',
+                      boxShadow: '0 20px 40px -5px rgba(0,0,0,0.1)'
                     }}
                   >
                     {suggestions.map((s, i) => (
                       <div
                         key={`${s.title}-${i}`}
-                        style={{ padding: '1rem 1.5rem', cursor: 'pointer', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', gap: '1rem' }}
+                        style={{ padding: '1rem 1.5rem', cursor: 'pointer', borderBottom: '1px solid rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', gap: '1rem', color: '#1e293b' }}
                         className="glass-hover"
                         onClick={() => handleSuggestionClick(s)}
                       >
-                        <span style={{ fontSize: '1.2rem', background: 'rgba(255,255,255,0.05)', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%' }}>
+                        <span style={{ fontSize: '1.2rem', background: 'rgba(0,0,0,0.05)', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%' }}>
                           {s.source === 'history' ? '🕒' : (s.type === 'ingredient' ? '🥬' : '🍲')}
                         </span>
                         <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -444,7 +429,7 @@ const Dashboard = () => {
            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem', marginTop: '2rem' }}>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: 300 }}>Found <strong style={{ color: 'var(--primary)' }}>{total}</strong> matches</h3>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: 300, color: '#1e293b' }}>Found <strong style={{ color: 'var(--primary)' }}>{total}</strong> matches</h3>
           </div>
           
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '2rem' }}>
@@ -454,7 +439,9 @@ const Dashboard = () => {
                 className="glass"
                 style={{ 
                     padding: '0', borderRadius: '1.5rem', cursor: 'pointer', overflow: 'hidden',
-                    border: '1px solid rgba(255,255,255,0.05)'
+                    border: '1px solid rgba(0,0,0,0.05)',
+                    background: 'white',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)'
                 }}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -462,14 +449,14 @@ const Dashboard = () => {
                 whileHover={{ y: -10, boxShadow: '0 20px 40px -10px rgba(0,0,0,0.5)' }}
                 onClick={() => handleAnalyze(dish)}
               >
-                <div style={{ height: '140px', background: `linear-gradient(135deg, #1e293b 0%, #0f172a 100%)`, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <span style={{ fontSize: '3.5rem', opacity: 0.2 }}>🍲</span>
-                    <div style={{ position: 'absolute', bottom: '1rem', right: '1rem', background: 'rgba(0,0,0,0.5)', padding: '0.3rem 0.8rem', borderRadius: '1rem', backdropFilter: 'blur(4px)', fontSize: '0.8rem' }}>
+                <div style={{ height: '140px', background: `linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)`, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ fontSize: '3.5rem', opacity: 1 }}>🍲</span>
+                    <div style={{ position: 'absolute', bottom: '1rem', right: '1rem', background: 'rgba(255,255,255,0.8)', padding: '0.3rem 0.8rem', borderRadius: '1rem', backdropFilter: 'blur(4px)', fontSize: '0.8rem', color: '#1e293b', boxShadow: '0 2px 5px rgba(0,0,0,0.05)' }}>
                         {dish.Calories ? `${Math.round(dish.Calories)} kcal` : 'N/A'}
                     </div>
                 </div>
                 <div style={{ padding: '1.5rem' }}>
-                    <h3 style={{ fontSize: '1.3rem', marginBottom: '0.5rem', fontFamily: '"Playfair Display", serif' }}>
+                    <h3 style={{ fontSize: '1.3rem', marginBottom: '0.5rem', fontFamily: '"Playfair Display", serif', color: '#1e293b' }}>
                         {dish.Recipe_title || dish.title || 'Unknown Dish'}
                     </h3>
                     <button className="btn-outline" style={{ width: '100%', marginTop: '1rem', padding: '0.8rem' }}>
@@ -522,7 +509,7 @@ const Dashboard = () => {
                     title="Bio-Compatibility"
                 >
                    <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                      <h1 style={{ fontSize: '2.5rem', fontFamily: '"Playfair Display", serif', marginBottom: '0.5rem', lineHeight: 1.1, background: 'linear-gradient(180deg, #fff 0%, #94a3b8 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', maxWidth: '90%' }}>
+                      <h1 style={{ fontSize: '2.5rem', fontFamily: '"Playfair Display", serif', marginBottom: '0.5rem', lineHeight: 1.1, color: '#1e293b', maxWidth: '90%', textAlign: 'center' }}>
                         {analysis.dish.dishName || analysis.dish.Recipe_title}
                       </h1>
 
@@ -536,7 +523,7 @@ const Dashboard = () => {
 
                           <svg viewBox="0 0 100 100" style={{ transform: 'rotate(-90deg)', width: '100%', height: '100%' }}>
                             {/* Track */}
-                            <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="4" />
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(0,0,0,0.05)" strokeWidth="4" />
                             {/* Indicator */}
                             <motion.circle
                               cx="50" cy="50" r="45" fill="none" stroke="url(#gradientScore)" strokeWidth="6"
@@ -556,10 +543,10 @@ const Dashboard = () => {
                          </svg>
 
                          <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                            <span style={{ fontSize: '4.5rem', fontWeight: '800', fontFamily: '"Playfair Display", serif', textShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
+                            <span style={{ fontSize: '4.5rem', fontWeight: '800', fontFamily: '"Playfair Display", serif', color: '#1e293b', textShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
                                 {Math.round(analysis.analysis.bioScore)}
                             </span>
-                            <span style={{ fontSize: '0.8rem', opacity: 0.6, letterSpacing: '3px', textTransform: 'uppercase', marginTop: '-5px' }}>Score</span>
+                            <span style={{ fontSize: '0.8rem', opacity: 0.6, letterSpacing: '3px', textTransform: 'uppercase', marginTop: '-5px', color: '#64748b', fontWeight: 'bold' }}>Score</span>
                          </div>
                       </div>
 
@@ -568,8 +555,8 @@ const Dashboard = () => {
                           background: analysis.analysis.block ? 'rgba(239, 68, 68, 0.1)' : (analysis.analysis.bioScore < 50 ? 'rgba(245, 158, 11, 0.1)' : 'rgba(16, 185, 129, 0.1)'),
                           border: `1px solid ${analysis.analysis.block ? '#ef4444' : (analysis.analysis.bioScore < 50 ? '#f59e0b' : '#10b981')}40`,
                           boxShadow: `0 0 20px ${analysis.analysis.block ? '#ef4444' : (analysis.analysis.bioScore < 50 ? '#f59e0b' : '#10b981')}20`,
-                          color: analysis.analysis.block ? '#fca5a5' : (analysis.analysis.bioScore < 50 ? '#fcd34d' : '#6ee7b7'),
-                          fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.8rem'
+                          color: analysis.analysis.block ? '#b91c1c' : (analysis.analysis.bioScore < 50 ? '#b45309' : '#047857'), // Darker text for readability
+                          fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.8rem'
                       }}>
                           {analysis.analysis.block ? '⛔ Not Recommended' : (analysis.analysis.bioScore < 50 ? '⚠️ Caution Advised' : '✅ Safe to Eat')}
                       </div>
@@ -584,13 +571,13 @@ const Dashboard = () => {
                     title="Flavor Profile"
                 >
                   <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                      <h2 style={{ fontSize: '3rem', fontFamily: '"Playfair Display", serif', marginBottom: '2rem', background: 'linear-gradient(135deg, #a78bfa 0%, #fff 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                      <h2 style={{ fontSize: '3rem', fontFamily: '"Playfair Display", serif', marginBottom: '2rem', color: '#6366f1' }}>
                           Taste Match
                       </h2>
 
                       <div style={{ position: 'relative', width: '220px', height: '220px', margin: '0 auto', animation: 'float 6s ease-in-out infinite' }}>
                          <svg viewBox="0 0 100 100" style={{ transform: 'rotate(-90deg)', width: '100%', height: '100%' }}>
-                            <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(0,0,0,0.05)" strokeWidth="8" />
                             <motion.circle
                               cx="50" cy="50" r="45" fill="none" stroke="url(#gradientTaste)" strokeWidth="8"
                               strokeDasharray="283"
@@ -608,13 +595,13 @@ const Dashboard = () => {
                             </defs>
                          </svg>
                          <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                            <span style={{ fontSize: '4rem', fontWeight: '800', fontFamily: '"Playfair Display", serif', color: '#fff' }}>{Math.round(analysis.analysis.tasteScore)}%</span>
-                            <span style={{ fontSize: '0.8rem', opacity: 0.6, letterSpacing: '2px', textTransform: 'uppercase' }}>Match</span>
+                            <span style={{ fontSize: '4rem', fontWeight: '800', fontFamily: '"Playfair Display", serif', color: '#1e293b' }}>{Math.round(analysis.analysis.tasteScore)}%</span>
+                            <span style={{ fontSize: '0.8rem', opacity: 0.6, letterSpacing: '2px', textTransform: 'uppercase', fontWeight: 'bold', color: '#64748b' }}>Match</span>
                          </div>
                       </div>
 
-                      <p style={{ marginTop: '2rem', fontSize: '1.2rem', opacity: 0.7, maxWidth: '400px', lineHeight: 1.6 }}>
-                        "This dish aligns with your preference for <span style={{ color: '#a78bfa', fontWeight: 'bold' }}>savory</span> and <span style={{ color: '#a78bfa', fontWeight: 'bold' }}>spicy</span> flavors."
+                      <p style={{ marginTop: '2rem', fontSize: '1.2rem', opacity: 0.7, maxWidth: '400px', lineHeight: 1.6, color: '#64748b' }}>
+                        "This dish aligns with your preference for <span style={{ color: '#6366f1', fontWeight: 'bold' }}>savory</span> and <span style={{ color: '#6366f1', fontWeight: 'bold' }}>spicy</span> flavors."
                       </p>
                   </div>
                 </StoryCard>
@@ -626,8 +613,8 @@ const Dashboard = () => {
                     color="#3b82f6"
                     title="Intel Logs"
                 >
-                  <div style={{ flex: 1, width: '100%', display: 'flex', flexDirection: 'column' }}>
-                      <h2 style={{ fontSize: '2.5rem', fontFamily: '"Playfair Display", serif', marginBottom: '1.5rem', textAlign: 'left' }}>Analysis Data</h2>
+                  <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                      <h2 style={{ fontSize: '2.5rem', fontFamily: '"Playfair Display", serif', marginBottom: '1.5rem', textAlign: 'left', color: 'black' }}>Analysis Data</h2>
 
                       <div style={{ flex: 1, overflowY: 'auto', paddingRight: '0.5rem' }} className="custom-scrollbar">
                           {analysis.analysis.evidence.length > 0 ? (
@@ -635,9 +622,9 @@ const Dashboard = () => {
                               {analysis.analysis.evidence.map((item, i) => (
                                 <div key={i} className="glass-hover" style={{
                                     padding: '1.2rem',
-                                    background: 'rgba(255,255,255,0.03)',
+                                    background: 'rgba(255,255,255,0.5)',
                                     borderRadius: '1rem',
-                                    border: '1px solid rgba(255,255,255,0.05)',
+                                    border: '1px solid rgba(0,0,0,0.05)',
                                     textAlign: 'left',
                                     position: 'relative', overflow: 'hidden'
                                 }}>
@@ -645,30 +632,30 @@ const Dashboard = () => {
                                    <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: item.type === 'critical' ? '#ef4444' : '#f59e0b' }} />
                                    
                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.8rem', paddingLeft: '1rem' }}>
-                                      <strong style={{ fontSize: '1.3rem', color: '#fff' }}>{item.ingredient}</strong>
+                                      <strong style={{ fontSize: '1.3rem', color: '#1e293b' }}>{item.ingredient}</strong>
                                       <span style={{ 
                                           fontSize: '0.7rem', padding: '0.3rem 0.8rem', borderRadius: '2rem', 
                                           border: `1px solid ${item.type === 'critical' ? '#ef4444' : '#f59e0b'}`,
-                                          color: item.type === 'critical' ? '#fca5a5' : '#fcd34d', 
+                                          color: item.type === 'critical' ? '#b91c1c' : '#b45309', // Dark red/amber
                                           fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase'
                                       }}>
                                         {item.type === 'critical' ? 'Allergy Conflict' : 'Sensitivity'}
                                       </span>
                                    </div>
-                                   <p style={{ margin: 0, paddingLeft: '1rem', fontSize: '1rem', opacity: 0.7, lineHeight: 1.6 }}>{item.reason}</p>
+                                   <p style={{ margin: 0, paddingLeft: '1rem', fontSize: '1rem', opacity: 0.8, lineHeight: 1.6, color: '#475569' }}>{item.reason}</p>
                                 </div>
                               ))}
                             </div>
                           ) : (
-                             <div style={{ padding: '4rem', textAlign: 'center', opacity: 0.5, border: '2px dashed rgba(255,255,255,0.1)', borderRadius: '1rem' }}>
+                             <div style={{ padding: '4rem', textAlign: 'center', opacity: 0.5, border: '2px dashed rgba(0,0,0,0.1)', borderRadius: '1rem' }}>
                                <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>✨</div>
                                <p style={{ fontSize: '1.2rem' }}>No negative interactions detected.</p>
                              </div>
                           )}
                           
-                          <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.1)', textAlign: 'left' }}>
+                          <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid rgba(0,0,0,0.05)', textAlign: 'left' }}>
                             {analysis.analysis.breakdown.map((msg, i) => (
-                               <p key={i} style={{ fontSize: '1rem', opacity: 0.8, marginBottom: '1rem', lineHeight: 1.7, fontFamily: 'monospace', paddingLeft: '1rem', borderLeft: '2px solid rgba(255,255,255,0.1)' }} dangerouslySetInnerHTML={{ __html: msg }} />
+                               <p key={i} style={{ fontSize: '1rem', opacity: 0.8, marginBottom: '1rem', lineHeight: 1.7, fontFamily: 'monospace', paddingLeft: '1rem', borderLeft: '2px solid rgba(0,0,0,0.1)', color: '#334155' }} dangerouslySetInnerHTML={{ __html: msg }} />
                             ))}
                           </div>
                       </div>
@@ -689,7 +676,7 @@ const Dashboard = () => {
                          <div style={{ flex: 1, overflowY: 'auto', paddingRight: '1rem' }} className="custom-scrollbar">
                              {analysis.analysis.modifications && analysis.analysis.modifications.length > 0 && (
                                 <div style={{ marginBottom: '3rem', textAlign: 'left' }}>
-                                   <h4 style={{ opacity: 0.5, marginBottom: '1.5rem', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '2px', paddingBottom: '0.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>Recommended Swaps</h4>
+                                   <h4 style={{ opacity: 0.5, marginBottom: '1.5rem', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '2px', paddingBottom: '0.5rem', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>Recommended Swaps</h4>
                                    <div style={{ display: 'grid', gap: '1rem' }}>
                                        {analysis.analysis.modifications.map((mod, k) => (
                                            <div key={k} style={{ 
@@ -697,7 +684,7 @@ const Dashboard = () => {
                                                padding: '1.2rem', background: 'rgba(16, 185, 129, 0.05)', borderRadius: '1rem', 
                                                border: '1px solid rgba(16, 185, 129, 0.2)' 
                                            }}>
-                                              <div style={{ textDecoration: 'line-through', opacity: 0.5, textAlign: 'center' }}>{mod.original}</div>
+                                              <div style={{ textDecoration: 'line-through', opacity: 0.6, textAlign: 'center', color: '#ef4444' }}>{mod.original}</div>
                                               <div style={{ color: '#10b981', fontSize: '1.2rem' }}>➔</div>
                                               <div style={{ fontWeight: 'bold', color: '#6ee7b7', textAlign: 'center', fontSize: '1.1rem' }}>{mod.swap}</div>
                                            </div>
@@ -708,7 +695,7 @@ const Dashboard = () => {
 
                              {analysis.alternatives.length > 0 && (
                                <div style={{ textAlign: 'left' }}>
-                                 <h4 style={{ opacity: 0.5, marginBottom: '1.5rem', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '2px', paddingBottom: '0.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>Related Safe Recipes</h4>
+                                 <h4 style={{ opacity: 0.5, marginBottom: '1.5rem', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '2px', paddingBottom: '0.5rem', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>Related Safe Recipes</h4>
                                  <div style={{ display: 'grid', gap: '1rem' }}>
                                      {analysis.alternatives.map((alt, idx) => (
                                        <div
@@ -716,15 +703,16 @@ const Dashboard = () => {
                                          className="glass-hover"
                                          style={{ 
                                              display: 'flex', alignItems: 'center', justifyContent: 'space-between', 
-                                             padding: '1.2rem', background: 'rgba(255,255,255,0.02)', 
-                                             borderRadius: '1rem', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.05)' 
+                                             padding: '1.2rem', background: 'white', 
+                                             borderRadius: '1rem', cursor: 'pointer', border: '1px solid rgba(0,0,0,0.05)',
+                                             boxShadow: '0 2px 5px rgba(0,0,0,0.05)'
                                          }}
                                          onClick={() => handleAnalyze(alt)}
                                        >
                                          <div>
-                                           <div style={{ fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '0.3rem' }}>{alt.Recipe_title || alt.title}</div>
-                                           <div style={{ fontSize: '0.8rem', opacity: 0.7, color: '#34d399', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                               <span style={{ width: '6px', height: '6px', backgroundColor: '#34d399', borderRadius: '50%' }}></span>
+                                           <div style={{ fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '0.3rem', color: '#384353' }}>{alt.Recipe_title || alt.title}</div>
+                                           <div style={{ fontSize: '0.8rem', opacity: 1, color: '#059669', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold' }}>
+                                               <span style={{ width: '6px', height: '6px', backgroundColor: '#059669', borderRadius: '50%' }}></span>
                                                98% Compatibility
                                            </div>
                                          </div>
@@ -745,41 +733,40 @@ const Dashboard = () => {
                <motion.div
                 style={{
                     position: 'absolute',
-                    bottom: '3rem',
+                    bottom: '5vh',
                     left: '50%',
                     x: '-50%',
-                    opacity: scrollOpacity,
-                    y: scrollYValue,
+                    // Always visible to guide navigation
+                    opacity: 1,
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     pointerEvents: 'none',
-                    zIndex: 20
+                    zIndex: 100,
+                    color: '#1e293b' // Dark Text for Light Mode
                 }}
                >
-                  <p style={{ 
-                      fontSize: '0.9rem', 
-                      letterSpacing: '3px', 
-                      textTransform: 'uppercase', 
-                      marginBottom: '1rem', 
-                      opacity: 0.6,
-                      textShadow: '0 2px 10px rgba(0,0,0,0.5)'
-                  }}>
-                      System Feedback Below
-                  </p>
                   <motion.div
-                      animate={{ y: [0, 10, 0], opacity: [0.5, 1, 0.5] }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ 
+                          opacity: 1, 
+                          y: [0, 10, 0] 
+                      }}
+                      transition={{ 
+                          opacity: { duration: 0.8, delay: 1 }, // Delay appearance slightly
+                          y: { duration: 2, repeat: Infinity, ease: "easeInOut" } 
+                      }}
                       style={{ 
-                          width: '40px', height: '40px', 
+                          width: '50px', height: '50px', 
                           borderRadius: '50%', 
-                          border: '1px solid rgba(255,255,255,0.2)',
+                          border: '2px solid rgba(30, 41, 59, 0.1)',
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          background: 'rgba(255,255,255,0.05)',
-                          backdropFilter: 'blur(10px)'
+                          background: 'rgba(255,255,255,0.5)',
+                          backdropFilter: 'blur(10px)',
+                          boxShadow: '0 5px 20px rgba(0,0,0,0.05)'
                       }}
                   >
-                      <span style={{ fontSize: '1.2rem', marginTop: '2px' }}>↓</span>
+                      <span style={{ fontSize: '1.5rem', marginTop: '2px' }}>↓</span>
                   </motion.div>
                </motion.div>
 
@@ -793,23 +780,23 @@ const Dashboard = () => {
               minHeight: '80vh', 
               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
               position: 'relative', zIndex: 10,
-              background: 'radial-gradient(circle at 50% 50%, #1e293b 0%, #020617 100%)',
-              borderTop: '1px solid rgba(255,255,255,0.05)',
+              background: 'linear-gradient(180deg, #f0fdf4 0%, #fff 100%)', // Soft Mint to White
+              borderTop: '1px solid rgba(0,0,0,0.05)',
               padding: '4rem 2rem'
           }}>
               {/* Background Glow */}
               <div style={{
                   position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-                  width: '60vw', height: '60vw', background: 'radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%)',
+                  width: '60vw', height: '60vw', background: 'radial-gradient(circle, rgba(16, 185, 129, 0.05) 0%, transparent 70%)',
                   pointerEvents: 'none', filter: 'blur(80px)'
               }} />
 
               <div className="glass" style={{
                   padding: '4rem', borderRadius: '3rem',
-                  background: 'rgba(15, 23, 42, 0.6)',
+                  background: 'rgba(255, 255, 255, 0.6)',
                   backdropFilter: 'blur(40px)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  boxShadow: '0 50px 100px -20px rgba(0,0,0,0.7)',
+                  border: '1px solid rgba(255,255,255,0.5)',
+                  boxShadow: '0 30px 60px -15px rgba(0,0,0,0.08)',
                   maxWidth: '800px', width: '100%',
                   textAlign: 'center', position: 'relative', overflow: 'hidden'
               }}>
@@ -818,11 +805,11 @@ const Dashboard = () => {
                   
                   <h3 style={{ 
                       fontSize: '3.5rem', fontFamily: '"Playfair Display", serif', marginBottom: '1rem',
-                      background: 'linear-gradient(135deg, #fff 0%, #94a3b8 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
+                      color: '#1e293b'
                   }}>
                       System Feedback
                   </h3>
-                  <p style={{ fontSize: '1.2rem', opacity: 0.7, marginBottom: '3rem', maxWidth: '600px', margin: '0 auto 3rem auto' }}>
+                  <p style={{ fontSize: '1.2rem', opacity: 0.7, marginBottom: '3rem', maxWidth: '600px', margin: '0 auto 3rem auto', color: '#64748b' }}>
                       Help us fine-tune your bio-algorithm. How did your body respond to this fuel?
                   </p>
 
@@ -839,8 +826,8 @@ const Dashboard = () => {
                           }}
                       >
                           <span style={{ fontSize: '2.5rem', filter: 'drop-shadow(0 0 10px rgba(16, 185, 129, 0.5))' }}>⚡</span>
-                          <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#6ee7b7' }}>Optimal</span>
-                          <span style={{ fontSize: '0.9rem', opacity: 0.7 }}>Felt great, full energy.</span>
+                          <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#065f46' }}>Optimal</span>
+                          <span style={{ fontSize: '0.9rem', opacity: 0.8, color: '#1e293b' }}>Felt great, full energy.</span>
                       </button>
 
                       <button 
@@ -855,8 +842,8 @@ const Dashboard = () => {
                           }}
                       >
                           <span style={{ fontSize: '2.5rem', filter: 'drop-shadow(0 0 10px rgba(245, 158, 11, 0.5))' }}>⚠️</span>
-                          <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#fcd34d' }}>Minor Load</span>
-                          <span style={{ fontSize: '0.9rem', opacity: 0.7 }}>Slight bloat or fatigue.</span>
+                          <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#92400e' }}>Minor Load</span>
+                          <span style={{ fontSize: '0.9rem', opacity: 0.8, color: '#1e293b' }}>Slight bloat or fatigue.</span>
                       </button>
 
                       <button 
@@ -871,8 +858,8 @@ const Dashboard = () => {
                           }}
                       >
                           <span style={{ fontSize: '2.5rem', filter: 'drop-shadow(0 0 10px rgba(239, 68, 68, 0.5))' }}>⛔</span>
-                          <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#fca5a5' }}>Conflict</span>
-                          <span style={{ fontSize: '0.9rem', opacity: 0.7 }}>Bad reaction, avoid.</span>
+                          <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#991b1b' }}>Conflict</span>
+                          <span style={{ fontSize: '0.9rem', opacity: 0.8, color: '#1e293b' }}>Bad reaction, avoid.</span>
                       </button>
                   </div>
               </div>

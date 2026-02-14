@@ -8,7 +8,7 @@ import { useAuth } from '../context/AuthContext'; // Ensure this matches your pr
 // --- Background for consistency ---
 const GlobalBackground = () => (
     <div style={{ position: 'fixed', inset: 0, zIndex: -1, overflow: 'hidden', background: 'var(--bg-primary)' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 0%, #1e293b 0%, #020617 100%)' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 0%, #ffffff 0%, #f0fdf4 100%)' }} />
         <motion.div
             animate={{ opacity: [0.3, 0.6, 0.3] }}
             transition={{ duration: 5, repeat: Infinity }}
@@ -99,7 +99,7 @@ const MenuScanner = () => {
     };
 
     return (
-        <div style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', color: 'var(--text-primary)', minHeight: '100vh', paddingTop: '120px' }}>
+        <div style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', color: '#1e293b', minHeight: '100vh', paddingTop: '120px' }}>
             <GlobalBackground />
 
             <div className="container" style={{ maxWidth: '800px', paddingBottom: '4rem' }}>
@@ -109,7 +109,7 @@ const MenuScanner = () => {
                     transition={{ duration: 0.8 }}
                     style={{ textAlign: 'center', marginBottom: '3rem' }}
                 >
-                    <h1 style={{ fontSize: '3.5rem', marginBottom: '1rem' }}>
+                    <h1 style={{ fontSize: '3.5rem', marginBottom: '1rem', color: 'black' }}>
                         Scan Your <span style={{ color: 'var(--primary)', fontStyle: 'italic' }}>Menu.</span>
                     </h1>
                     <p style={{ fontSize: '1.2rem', opacity: 0.8, maxWidth: '500px', margin: '0 auto' }}>
@@ -127,8 +127,8 @@ const MenuScanner = () => {
                         style={{
                             padding: '3rem',
                             borderRadius: '2rem',
-                            border: `2px dashed ${dragActive ? 'var(--primary)' : 'rgba(255,255,255,0.1)'}`,
-                            background: dragActive ? 'rgba(245, 158, 11, 0.05)' : 'var(--glass-bg)',
+                            border: `2px dashed ${dragActive ? 'var(--primary)' : 'rgba(0,0,0,0.1)'}`,
+                            background: dragActive ? 'rgba(245, 158, 11, 0.05)' : 'rgba(255,255,255,0.6)',
                             transition: 'all 0.3s',
                             textAlign: 'center',
                             cursor: 'pointer',
@@ -157,7 +157,7 @@ const MenuScanner = () => {
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
                                 >
-                                    <div className="spinner" style={{ margin: '0 auto 1.5rem', width: '50px', height: '50px', border: '3px solid rgba(255,255,255,0.1)', borderTopColor: 'var(--primary)', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                                    <div className="spinner" style={{ margin: '0 auto 1.5rem', width: '50px', height: '50px', border: '3px solid rgba(0,0,0,0.1)', borderTopColor: 'var(--primary)', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
                                     <h3 style={{ fontSize: '1.5rem', color: 'var(--primary)' }}>Analyzing Menu...</h3>
                                     <p style={{ opacity: 0.6 }}>Identifying dishes and checking your profile...</p>
                                 </motion.div>
@@ -200,7 +200,7 @@ const MenuScanner = () => {
                                     exit={{ opacity: 0 }}
                                 >
                                     <div style={{
-                                        width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(255,255,255,0.05)',
+                                        width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(0,0,0,0.05)',
                                         margin: '0 auto 1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center',
                                         fontSize: '2rem'
                                     }}>
@@ -246,7 +246,7 @@ const MenuScanner = () => {
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: idx * 0.1 }}
                                     className="glass"
-                                    style={{ padding: '1.5rem', borderRadius: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                                    style={{ padding: '1.5rem', borderRadius: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.6)', border: '1px solid rgba(0,0,0,0.05)' }}
                                 >
                                     <div>
                                         <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>{dish.name}</h3>
@@ -254,7 +254,7 @@ const MenuScanner = () => {
                                         {dish.tags && dish.tags.length > 0 && (
                                             <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem' }}>
                                                 {dish.tags.map((tag, tIdx) => (
-                                                    <span key={tIdx} style={{ fontSize: '0.75rem', padding: '0.2rem 0.6rem', borderRadius: '1rem', background: 'rgba(255,255,255,0.1)' }}>{tag}</span>
+                                                    <span key={tIdx} style={{ fontSize: '0.75rem', padding: '0.2rem 0.6rem', borderRadius: '1rem', background: 'rgba(0,0,0,0.05)', color: '#64748b' }}>{tag}</span>
                                                 ))}
                                             </div>
                                         )}
@@ -262,7 +262,7 @@ const MenuScanner = () => {
                                     <div style={{ textAlign: 'right' }}>
                                         <div style={{
                                             fontSize: '1.5rem', fontWeight: 'bold',
-                                            color: dish.score >= 80 ? '#4ade80' : dish.score >= 50 ? '#facc15' : '#f87171'
+                                            color: dish.score >= 80 ? '#16a34a' : dish.score >= 50 ? '#ca8a04' : '#dc2626'
                                         }}>
                                             {dish.score}%
                                         </div>

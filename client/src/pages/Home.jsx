@@ -15,7 +15,7 @@ const GlobalBackground = () => {
     return (
         <div style={{ position: 'fixed', inset: 0, zIndex: -1, overflow: 'hidden', background: 'var(--bg-primary)' }}>
              {/* Base Gradient */}
-            <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 0%, #1e293b 0%, #020617 100%)' }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 0%, #ffffff 0%, #f0fdf4 100%)' }} />
 
             {/* Dynamic Layers */}
              <motion.div style={{ position: 'absolute', inset: 0, opacity: op2, background: 'radial-gradient(circle at 80% 30%, rgba(245, 158, 11, 0.15) 0%, transparent 60%)' }} />
@@ -36,8 +36,8 @@ const ScrollTraveler = () => {
     const x = useTransform(springProgress, [0, 0.25, 0.5, 0.75, 1], ["80vw", "20vw", "80vw", "50vw", "50vw"]);
     const y = useTransform(springProgress, [0, 0.25, 0.5, 0.75, 1], ["15vh", "40vh", "60vh", "80vh", "50vh"]);
     const scale = useTransform(springProgress, [0, 0.5, 1], [1, 2, 0.5]);
-    const glow = useTransform(springProgress, [0, 0.5, 1], ["0px 0px 20px var(--primary)", "0px 0px 60px var(--accent)", "0px 0px 40px #fff"]);
-    const color = useTransform(springProgress, [0, 0.5, 1], ["#f59e0b", "#10b981", "#fff"]);
+    const glow = useTransform(springProgress, [0, 0.5, 1], ["0px 0px 20px var(--primary)", "0px 0px 60px var(--accent)", "0px 0px 40px rgba(99, 102, 241, 0.4)"]);
+    const color = useTransform(springProgress, [0, 0.5, 1], ["#f59e0b", "#10b981", "#6366f1"]);
 
     return (
         <motion.div 
@@ -95,7 +95,7 @@ const ParticleExplosion = ({ color }) => (
 
 const Home = () => {
   return (
-    <div style={{ color: 'var(--text-primary)', fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
+    <div style={{ color: '#1e293b', fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
       <GlobalBackground />
       <ScrollTraveler />
 
@@ -113,9 +113,9 @@ const Home = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 1, ease: 'easeOut' }}
                 >
-                    <h1 style={{ fontSize: 'clamp(4rem, 10vw, 8rem)', fontWeight: 800, lineHeight: 0.9, marginBottom: '1rem', letterSpacing: '-0.04em' }}>
+                    <h1 style={{ fontSize: 'clamp(4rem, 10vw, 8rem)', fontWeight: 800, lineHeight: 0.9, marginBottom: '1rem', letterSpacing: '-0.04em', color: 'black' }}>
                         Eat In <span style={{ 
-                            background: 'linear-gradient(135deg, var(--primary) 0%, #d97706 100%)', 
+                            background: 'linear-gradient(135deg, var(--primary) 0%, #059669 100%)', 
                             WebkitBackgroundClip: 'text', 
                             WebkitTextFillColor: 'transparent',
                             fontStyle: 'italic'
@@ -153,8 +153,9 @@ const Home = () => {
                         padding: '4rem', 
                         borderRadius: '2rem', 
                         maxWidth: '800px', 
-                        background: 'rgba(16, 185, 129, 0.05)',
-                        border: '1px solid rgba(16, 185, 129, 0.2)',
+                        background: 'rgba(255, 255, 255, 0.6)',
+                        border: '1px solid rgba(16, 185, 129, 0.1)',
+                        boxShadow: '0 20px 40px -10px rgba(16, 185, 129, 0.1)',
                         textAlign: 'center'
                     }}
                 >
@@ -185,8 +186,9 @@ const Home = () => {
                         borderRadius: '2rem',
                         maxWidth: '800px',
                         textAlign: 'center',
-                        background: 'rgba(59, 130, 246, 0.05)',
-                        border: '1px solid rgba(59, 130, 246, 0.2)'
+                        background: 'rgba(255, 255, 255, 0.6)',
+                        border: '1px solid rgba(59, 130, 246, 0.1)',
+                        boxShadow: '0 20px 40px -10px rgba(59, 130, 246, 0.1)'
                     }}
                  >
                     <h2 style={{ fontSize: '4rem', color: '#60a5fa', marginBottom: '1rem' }}>Taste Match.</h2>
@@ -210,7 +212,7 @@ const Home = () => {
             transition={{ duration: 0.8 }}
             style={{ textAlign: 'center' }}
          >
-             <h2 style={{ fontSize: '5rem', marginBottom: '2rem' }}>Ready?</h2>
+             <h2 style={{ fontSize: '5rem', marginBottom: '2rem', color: '#1e293b' }}>Ready?</h2>
              <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center' }}>
                 <Link href="/auth">
                     <button className="btn-primary" style={{ padding: '1rem 3rem', fontSize: '1.2rem' }}>Get Started</button>

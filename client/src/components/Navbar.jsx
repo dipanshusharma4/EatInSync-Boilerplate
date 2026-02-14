@@ -49,10 +49,10 @@ const Navbar = () => {
                     display: 'flex',
                     alignItems: 'center',
                     gap: '3rem',
-                    background: 'rgba(15, 23, 42, 0.6)', // Slightly darker for contrast
+                    background: 'rgba(255, 255, 255, 0.7)', // Frosted White
                     backdropFilter: 'blur(20px)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    boxShadow: '0 10px 40px -10px rgba(0,0,0,0.5)'
+                    border: '1px solid rgba(0, 0, 0, 0.05)',
+                    boxShadow: '0 10px 40px -10px rgba(0,0,0,0.05)'
                 }}
             >
                 {/* Logo */}
@@ -65,7 +65,7 @@ const Navbar = () => {
                             fontSize: '1.5rem', 
                             fontWeight: 700, 
                             cursor: 'pointer',
-                            background: 'linear-gradient(135deg, #fff 0%, #cbd5e1 100%)',
+                            background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
                             WebkitBackgroundClip: 'text',
                             WebkitTextFillColor: 'transparent',
                             letterSpacing: '-0.02em'
@@ -83,7 +83,7 @@ const Navbar = () => {
                             <Link key={link.path} href={link.path}>
                                 <div style={{ position: 'relative', cursor: 'pointer', padding: '0.5rem 0' }}>
                                     <span style={{ 
-                                        color: isActive ? '#fff' : 'var(--text-secondary)',
+                                        color: isActive ? 'var(--secondary)' : '#64748b',
                                         fontWeight: 500,
                                         transition: 'color 0.3s'
                                     }}>
@@ -98,9 +98,9 @@ const Navbar = () => {
                                                 left: 0,
                                                 right: 0,
                                                 height: '2px',
-                                                background: 'var(--primary)',
+                                                background: 'var(--secondary)',
                                                 borderRadius: '2px',
-                                                boxShadow: '0 0 10px var(--primary)'
+                                                boxShadow: '0 0 10px var(--secondary-glow)'
                                             }}
                                             transition={{ type: "spring", stiffness: 300, damping: 30 }}
                                         />
@@ -112,7 +112,7 @@ const Navbar = () => {
                 </div>
 
                 {/* Auth Actions */}
-                <div style={{ paddingLeft: '1rem', borderLeft: '1px solid rgba(255,255,255,0.1)' }}>
+                <div style={{ paddingLeft: '1rem', borderLeft: '1px solid rgba(0,0,0,0.1)' }}>
                     {isAuthenticated ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                             <motion.div 
@@ -130,10 +130,10 @@ const Navbar = () => {
                                 onClick={logout} 
                                 style={{ 
                                     background: 'transparent', 
-                                    color: 'var(--text-secondary)',
+                                    color: '#64748b',
                                     fontSize: '0.9rem',
                                     padding: '0.5rem 1rem',
-                                    border: '1px solid rgba(255,255,255,0.1)'
+                                    border: '1px solid rgba(0,0,0,0.1)'
                                 }}
                                 className="glass-hover"
                             >
