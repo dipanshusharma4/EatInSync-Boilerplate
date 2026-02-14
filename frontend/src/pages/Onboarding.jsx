@@ -54,7 +54,7 @@ const Onboarding = () => {
         try {
             const response = await axios.put('/onboarding', formData);
             setUser(response.data); // Update context with new profile
-            navigate('/analyze');
+            navigate('/scan-menu');
         } catch (error) {
             console.error("Onboarding failed:", error);
             // Handle error (show toast etc)

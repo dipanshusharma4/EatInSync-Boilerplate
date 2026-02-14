@@ -11,6 +11,7 @@ import About from './pages/About'
 import FAQs from './pages/FAQs'
 import { AuthProvider } from './context/AuthContext'
 import { ThemeProvider } from './context/ThemeContext'
+import MenuScanner from './pages/MenuScanner'
 
 function App() {
     return (
@@ -23,6 +24,7 @@ function App() {
                             <Routes>
                                 <Route path="/" element={<Home />} />
                                 <Route path="/analyze" element={<Analysis />} />
+                                <Route path="/scan-menu" element={<MenuScanner />} />
                                 <Route path="/auth" element={<Auth />} />
                                 <Route path="/onboarding" element={<Onboarding />} />
                                 <Route path="/profile" element={<Profile />} />

@@ -73,10 +73,20 @@ const getMe = async (req, res) => {
 
         if (user) {
             res.json({
-                id: user._id,
+                _id: user._id,
                 email: user.email,
                 full_name: user.full_name,
-                is_active: user.is_active
+                is_active: user.is_active,
+                onboarding_completed: user.onboarding_completed,
+                // Profile fields
+                nationality: user.nationality,
+                diet_type: user.diet_type,
+                lactose_intolerant: user.lactose_intolerant,
+                dietary_conditions: user.dietary_conditions,
+                taste_likes: user.taste_likes,
+                taste_dislikes: user.taste_dislikes,
+                avoided_ingredients: user.avoided_ingredients,
+                sensitivities: user.sensitivities
             });
         } else {
             res.status(404).json({ detail: 'User not found' });

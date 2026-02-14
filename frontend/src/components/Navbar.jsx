@@ -40,7 +40,8 @@ const Navbar = () => {
                                 </Link>
                                 <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-xl py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all transform origin-top-right z-50 border border-slate-100 dark:border-slate-700">
                                     <Link to="/profile" className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700">My Profile</Link>
-                                    <Link to="/analyze" className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700">New Analysis</Link>
+                                    <Link to="/analyze" className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700">Quick Check (Dish)</Link>
+                                    <Link to="/scan-menu" className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-semibold text-emerald-600 dark:text-emerald-400">Scan Full Menu ✨</Link>
                                     <button onClick={logout} className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10">Sign Out</button>
                                 </div>
                             </div>
