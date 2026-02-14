@@ -13,14 +13,15 @@ app.use(cors());
 
 // Database Connection
 mongoose.connect(process.env.MONGO_URI)
-.then(() => console.log('MongoDB Connected'))
-.catch(err => console.log(err));
+    .then(() => console.log('MongoDB Connected'))
+    .catch(err => console.log(err));
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/profile', require('./routes/profile'));
 app.use('/api/analyze', require('./routes/analyze'));
 app.use('/api/log-reaction', require('./routes/logReaction'));
+app.use('/api/v1', require('./routes/scan'));
 
 app.get('/', (req, res) => {
     res.send('EatInSync API Running');
