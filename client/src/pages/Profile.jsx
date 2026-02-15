@@ -141,7 +141,7 @@ const Profile = () => {
                             </div>
 
                             <div style={{ marginBottom: '1.5rem' }}>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Intolerances</label>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-muted)',fontWeight: 'bold' }}>Intolerances</label>
                                 <input 
                                     type="text" 
                                     placeholder="e.g. Gluten, Lactose (Monitoring)" 
@@ -152,7 +152,7 @@ const Profile = () => {
                             </div>
 
                             <div style={{ marginBottom: '1.5rem' }}>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Spice Tolerance</label>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-muted)',fontWeight: 'bold' }}>Spice Tolerance</label>
                                 <select 
                                     value={spiceTolerance} 
                                     onChange={e => setSpiceTolerance(e.target.value)}
