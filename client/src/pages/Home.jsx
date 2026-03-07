@@ -245,6 +245,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import { Link } from 'wouter';
 import Lenis from 'lenis';
 import clsx from 'clsx';
 import { AlertTriangle, User, Brain, Flame, Droplets, Zap, Heart, Sparkles } from 'lucide-react';
@@ -322,6 +323,43 @@ const CircularGauge = ({ value, label }) => (
     </div>
 );
 
+// --- SPECIAL VFX ---
+const SteamFX = () => (
+    <div style={{ position: 'absolute', top: '-120%', left: '-50%', right: '-50%', height: '250%', pointerEvents: 'none', zIndex: 0 }}>
+        {[...Array(25)].map((_, i) => (
+            <motion.div
+                key={i}
+                style={{
+                    position: 'absolute',
+                    bottom: '-10%',
+                    left: `${20 + Math.random() * 60}%`,
+                    width: Math.random() * 80 + 50,
+                    height: Math.random() * 120 + 80,
+                    background: 'radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(200, 230, 255, 0.3) 40%, transparent 70%)',
+                    filter: `blur(${20 + Math.random() * 15}px)`,
+                    borderRadius: '40%',
+                    transformOrigin: 'center bottom',
+                    mixBlendMode: 'screen',
+                    opacity: 0.6
+                }}
+                animate={{
+                    y: [0, -200 - Math.random() * 100],
+                    x: [(Math.random() - 0.5) * 40, (Math.random() - 0.5) * 100],
+                    opacity: [0, 0.6 + Math.random() * 0.2, 0],
+                    scale: [0.6, 1.8 + Math.random()],
+                    rotate: (Math.random() - 0.5) * 90
+                }}
+                transition={{
+                    duration: 1.5 + Math.random() * 2,
+                    repeat: Infinity,
+                    ease: "easeOut",
+                    delay: Math.random() * 1.5
+                }}
+            />
+        ))}
+    </div>
+);
+
 // --- MAIN COMPONENTS ---
 
 function Scene() {
@@ -330,18 +368,18 @@ function Scene() {
     const [imagesLoaded, setImagesLoaded] = useState(false);
     const whiskImagesRef = useRef([]);
     const { scrollYProgress } = useScroll(); // Track global window scroll
-    const whiskFrameIndex = useTransform(scrollYProgress, [0, 1], [1, 240]); // Map 0-1 to 1-240 frames
+    const whiskFrameIndex = useTransform(scrollYProgress, [0, 1], [1, 223]); // Map 0-1 to 1-240 frames
 
     useEffect(() => {
         let count = 0;
         const imgs = [];
         // Loop 1 to 240
-        for (let i = 1; i <= 240; i++) {
+        for (let i = 1; i <= 223; i++) {
             const img = new Image();
             // Use correct path and extension
             img.src = `/exploded-frames/ezgif-frame-${i.toString().padStart(3, '0')}.jpg`;
-            img.onload = () => { count++; if (count >= 230) setImagesLoaded(true); }; // Allow slightly fewer for fast load
-            img.onerror = () => { count++; if (count >= 230) setImagesLoaded(true); }; // Handle missing frames gracefully
+            img.onload = () => { count++; if (count >= 223) setImagesLoaded(true); }; // Allow slightly fewer for fast load
+            img.onerror = () => { count++; if (count >= 223) setImagesLoaded(true); }; // Handle missing frames gracefully
             imgs.push(img);
         }
         whiskImagesRef.current = imgs;
@@ -354,7 +392,7 @@ function Scene() {
         const dpr = window.devicePixelRatio || 1;
 
         const render = () => {
-            const currentFrame = Math.min(240, Math.max(1, Math.floor(whiskFrameIndex.get())));
+            const currentFrame = Math.min(223, Math.max(1, Math.floor(whiskFrameIndex.get())));
             const img = whiskImagesRef.current[currentFrame - 1];
             
             if (canvas && ctx) {
@@ -474,7 +512,48 @@ export default function Home() {
                     </div>
                 </HUDSection>
 
-                <div style={{ height: '100vh' }} />
+                <section style={{ ...styles.section, minHeight: '60vh', paddingBottom: '10vh' }}>
+                    <div style={{ ...styles.content, ...styles.alignCenter }}>
+                        <div style={{ position: 'relative', display: 'inline-block', zIndex: 20 }}>
+                            <SteamFX />
+                            <motion.h1
+                                style={{ ...styles.headingMain, fontSize: 'clamp(3rem, 6vw, 5rem)', position: 'relative', zIndex: 30, textShadow: '0 0 50px rgba(0, 214, 255, 0.4)' }}
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                            >
+                                READY TO <span style={styles.gradientText}>SYNC</span>?
+                            </motion.h1>
+                        </div>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            transition={{ delay: 0.2 }}
+                            viewport={{ once: true }}
+                            style={{ marginTop: '3rem' }}
+                        >
+                            <Link href="/auth">
+                                <motion.button
+                                    whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(0, 214, 255, 0.4)' }}
+                                    whileTap={{ scale: 0.95 }}
+                                    style={{
+                                        padding: '1.2rem 4rem',
+                                        fontSize: '1.2rem',
+                                        background: 'linear-gradient(135deg, #00D6FF 0%, #00ff88 100%)',
+                                        color: '#050505',
+                                        border: 'none',
+                                        borderRadius: '100px',
+                                        cursor: 'pointer',
+                                        fontWeight: 900,
+                                        letterSpacing: '0.05em',
+                                        textTransform: 'uppercase'
+                                    }}>
+                                    Get Started
+                                </motion.button>
+                            </Link>
+                        </motion.div>
+                    </div>
+                </section>
             </div>
         </main>
     );

@@ -23,6 +23,7 @@ const MenuScanner = () => {
     const [scanning, setScanning] = useState(false);
     const [results, setResults] = useState(null);
     const [error, setError] = useState(null);
+    const [showPreview, setShowPreview] = useState(false);
     const [, setLocation] = useLocation();
     const { token } = useAuth(); // Get auth token
 
@@ -180,9 +181,23 @@ const MenuScanner = () => {
                                         Analyze Menu
                                     </button>
                                     <button
+                                        type="button"
                                         className="btn-outline"
                                         style={{ marginTop: '1rem', marginLeft: '1rem', padding: '1rem 2rem' }}
                                         onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            setShowPreview(true);
+                                        }}
+                                    >
+                                        View
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="btn-outline"
+                                        style={{ marginTop: '1rem', marginLeft: '1rem', padding: '1rem 2rem', borderColor: '#ef4444', color: '#ef4444' }}
+                                        onClick={(e) => {
+                                            e.preventDefault();
                                             e.stopPropagation();
                                             setFile(null);
                                             setError(null);
@@ -274,6 +289,51 @@ const MenuScanner = () => {
                     </motion.div>
                 )}
             </div>
+
+            {/* Image Preview Modal */}
+            <AnimatePresence>
+                {showPreview && file && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        style={{
+                            position: 'fixed', inset: 0, zIndex: 100,
+                            background: 'rgba(0,0,0,0.8)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            backdropFilter: 'blur(5px)'
+                        }}
+                        onClick={() => setShowPreview(false)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.8, opacity: 0 }}
+                            style={{ position: 'relative', maxWidth: '90%', maxHeight: '90%' }}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <img
+                                src={URL.createObjectURL(file)}
+                                alt="Preview"
+                                style={{ maxWidth: '100%', maxHeight: '90vh', borderRadius: '1rem', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }}
+                            />
+                            <button
+                                onClick={() => setShowPreview(false)}
+                                style={{
+                                    position: 'absolute', top: '-1rem', right: '-1rem',
+                                    width: '40px', height: '40px', borderRadius: '50%',
+                                    background: 'white', border: 'none',
+                                    fontSize: '1.5rem', cursor: 'pointer',
+                                    boxShadow: '0 5px 15px rgba(0,0,0,0.2)',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                }}
+                            >
+                                ×
+                            </button>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             <style>{`
                 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }

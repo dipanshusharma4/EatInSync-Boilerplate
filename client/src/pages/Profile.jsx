@@ -127,7 +127,7 @@ const Profile = () => {
                             </p>
                             
                             <div style={{ marginBottom: '1.5rem' }}>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Allergies</label>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-muted)', fontWeight: 'bold' }}>Allergies</label>
                                 <input 
                                     type="text" 
                                     placeholder="e.g. Peanuts, Shellfish (Strictly Avoided)" 

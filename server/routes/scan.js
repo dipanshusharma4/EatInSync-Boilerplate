@@ -58,10 +58,10 @@ router.post('/scan-menu', auth, upload.single('image'), async (req, res) => {
 
         while (retries < maxRetries) {
             try {
-                // Attempt with Gemini 2.0 Flash
+                // Attempt with Gemini Flash Latest (Known working for this key)
                 console.log(`Sending to Gemini (Attempt ${retries + 1}/${maxRetries})...`);
                 const model = genAI.getGenerativeModel({
-                    model: "gemini-2.0-flash",
+                    model: "gemini-flash-latest",
                     generationConfig: { responseMimeType: "application/json" }
                 });
 
@@ -84,8 +84,9 @@ router.post('/scan-menu', auth, upload.single('image'), async (req, res) => {
                 if (retries >= maxRetries) {
                     // Fallback to older model on last attempt
                     try {
-                        console.log("Trying fallback to gemini-1.5-flash...");
-                        const modelFallback = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+                        console.log("Trying fallback to gemini-pro-latest...");
+                        // Use gemini-pro-latest as final fallback
+                        const modelFallback = genAI.getGenerativeModel({ model: "gemini-pro-latest" });
                         const result = await modelFallback.generateContent([prompt, imagePart]);
                         text = (await result.response).text();
                         text = text.replace(/```json/g, '').replace(/```/g, '').trim();

@@ -53,7 +53,7 @@ const Auth = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
             >
-                <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                <h2 style={{ textAlign: 'center', marginBottom: '2rem', color: 'black' }}>
                     {isLogin ? 'Welcome Back' : 'Join EatInSync'}
                 </h2>
                 
@@ -73,15 +73,22 @@ const Auth = () => {
                                     width: '100%',
                                     padding: '1rem',
                                     borderRadius: '1rem',
-                                    background: 'rgba(255,255,255,0.05)',
-                                    border: '1px solid rgba(255,255,255,0.1)',
-                                    color: '#fff',
+                                    background: '#ffffff',
+                                    border: '1px solid #e2e8f0',
+                                    color: '#1e293b',
                                     fontSize: '1rem',
                                     outline: 'none',
-                                    transition: 'all 0.3s'
+                                    transition: 'all 0.3s',
+                                    boxShadow: '0 2px 5px rgba(0,0,0,0.05)'
                                 }}
-                                onFocus={(e) => e.target.style.borderColor = 'var(--primary)'}
-                                onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                                onFocus={(e) => {
+                                    e.target.style.borderColor = 'var(--primary)';
+                                    e.target.style.boxShadow = '0 0 0 3px var(--primary-glow)';
+                                }}
+                                onBlur={(e) => {
+                                    e.target.style.borderColor = '#e2e8f0';
+                                    e.target.style.boxShadow = '0 2px 5px rgba(0,0,0,0.05)';
+                                }}
                             />
                         </div>
                     )}
@@ -98,15 +105,22 @@ const Auth = () => {
                                 width: '100%',
                                 padding: '1rem',
                                 borderRadius: '1rem',
-                                background: 'rgba(255,255,255,0.05)',
-                                border: '1px solid rgba(255,255,255,0.1)',
-                                color: '#fff',
+                                background: '#ffffff',
+                                border: '1px solid #e2e8f0',
+                                color: '#1e293b',
                                 fontSize: '1rem',
                                 outline: 'none',
-                                transition: 'all 0.3s'
+                                transition: 'all 0.3s',
+                                boxShadow: '0 2px 5px rgba(0,0,0,0.05)'
                             }}
-                            onFocus={(e) => e.target.style.borderColor = 'var(--primary)'}
-                            onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                            onFocus={(e) => {
+                                e.target.style.borderColor = 'var(--primary)';
+                                e.target.style.boxShadow = '0 0 0 3px var(--primary-glow)';
+                            }}
+                            onBlur={(e) => {
+                                e.target.style.borderColor = '#e2e8f0';
+                                e.target.style.boxShadow = '0 2px 5px rgba(0,0,0,0.05)';
+                            }}
                         />
                     </div>
                     
@@ -122,19 +136,26 @@ const Auth = () => {
                                 width: '100%',
                                 padding: '1rem',
                                 borderRadius: '1rem',
-                                background: 'rgba(255,255,255,0.05)',
-                                border: '1px solid rgba(255,255,255,0.1)',
-                                color: '#fff',
+                                background: '#ffffff',
+                                border: '1px solid #e2e8f0',
+                                color: '#1e293b',
                                 fontSize: '1rem',
                                 outline: 'none',
-                                transition: 'all 0.3s'
+                                transition: 'all 0.3s',
+                                boxShadow: '0 2px 5px rgba(0,0,0,0.05)'
                             }}
-                            onFocus={(e) => e.target.style.borderColor = 'var(--primary)'}
-                            onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                            onFocus={(e) => {
+                                e.target.style.borderColor = 'var(--primary)';
+                                e.target.style.boxShadow = '0 0 0 3px var(--primary-glow)';
+                            }}
+                            onBlur={(e) => {
+                                e.target.style.borderColor = '#e2e8f0';
+                                e.target.style.boxShadow = '0 2px 5px rgba(0,0,0,0.05)';
+                            }}
                         />
                     </div>
                     
-                    <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
+                    <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '1rem', fontSize: '1.1rem' }}>
                         {isLogin ? 'Login' : 'Sign Up'}
                     </button>
                 </form>
